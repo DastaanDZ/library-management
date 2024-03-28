@@ -1,4 +1,4 @@
-import HelloWorld from "@/components/HelloWorld.vue";
+import LandingPage from "@/components/LandingPage.vue";
 import LoginForm from "@/components/LoginForm.vue";
 import RegisterForm from "@/components/RegisterForm.vue";
 import Shark from "@/components/Shark.vue";
@@ -10,8 +10,8 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    name: "HelloWorld",
-    component: HelloWorld,
+    name: "LandingPage",
+    component: LandingPage,
   },
   {
     path: "/shark",
