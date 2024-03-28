@@ -23,6 +23,8 @@ class Book(db.Model):
     author = db.Column(db.String(255), nullable=False)
     count = db.Column(db.Integer())
     available = db.Column(db.Boolean())
+    last_login = db.Column(db.DateTime)
+    price = db.Column(db.Integer(), nullable=False)
 
     def serialize(self):
         return {
@@ -31,7 +33,9 @@ class Book(db.Model):
             'content': self.content,
             'author': self.author,
             'count': self.count,
-            'available': self.available
+            'available': self.available,
+            'login' : self.last_login,
+            'price' : self.price
             # Add more attributes as needed
         }
 

@@ -1,16 +1,23 @@
 # controllers.py
-from flask import Blueprint, request, jsonify
+from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory, Blueprint, jsonify
+import pdfkit
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from app.models import User, Book, Request, Feedback, Section, IssuedBook
 from app.database import db
 from datetime import datetime, timedelta
+from tasks import send_email
 
 app = Blueprint('controllers', __name__)
 
 @app.route('/', methods=['GET'])
 def greeting():
     return("Hello, world")
+
+@app.route('/email', methods=['GET'])
+def mail():
+    send_email.delay("21f2001529@ds.study.iitm.ac.in","nigaver985@ikumaru.com","Test subject","This is a test message")
+    return("EMAIL sent")
 
 # User Registration
 @app.route('/register', methods=['POST'])
@@ -29,6 +36,9 @@ def login():
 
     if not user or not check_password_hash(user.password, data['password']):
         return jsonify({'message': 'Invalid username or password'}), 401
+
+    user.last_login = datetime.now()  # Update last login time
+    db.session.commit()  # Commit changes to the database
 
     access_token = create_access_token(identity=user.id)
     return jsonify({'access_token': access_token}), 200
@@ -273,3 +283,42 @@ def view_available_books():
     
     available_books = Book.query.filter_by(available=True).all()
     return jsonify({'available_books': [book.serialize() for book in available_books]}), 200
+
+@app.route('/books')
+@jwt_required()
+def list_books():
+    books = Book.query.all()
+    return render_template('books.html', books=books)
+
+@app.route('/buy/<int:book_id>')
+@jwt_required()
+def buy(book_id):
+    book = Book.query.get(book_id)
+    if not book:
+        abort(404)
+
+    generate_pdf(book)
+    return redirect(url_for('download', book_id=book_id))
+
+@app.route('/download/<int:book_id>')
+@jwt_required()
+def download(book_id):
+    book = Book.query.get(book_id)
+    if not book:
+        abort(404)
+
+    return send_from_directory('pdfs', f'{book.name}.pdf')
+
+def generate_pdf(book):
+    html_content = f"""
+    <html>
+    <head><title>{book.name}</title></head>
+    <body>
+        <h1>{book.name}</h1>
+        <p>Price: ${book.price}</p>
+        <p>Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <!-- Add more book details here -->
+    </body>
+    </html>
+    """
+    pdfkit.from_string(html_content, f'pdfs/{book.name}.pdf')
