@@ -56,7 +56,7 @@ export default {
   },
   data() {
     return {
-      username: "", // Changed from email to username
+      username: "",
       password: "",
     };
   },
@@ -73,14 +73,21 @@ export default {
       axios
         .post(path, formData)
         .then((response) => {
-          console.log(response.data.access_token); // Log the access token
-          // Optionally, you can store the access token in local storage or Vuex store
-          // Redirect the user to another route upon successful login
-          this.$router.push("/dashboard");
+          // Check if access token is present in the response data
+          if (response.data && response.data.access_token) {
+            // Store the access token in localStorage
+            localStorage.setItem("accessToken", response.data.access_token);
+            console.log("token set in local storage");
+            // Redirect to the dashboard after successful login
+            this.$router.push("/user-info");
+          } else {
+            // Handle case where access token is missing or invalid
+            console.error("Access token not found in response data");
+            alert("Invalid response from the server. Please try again.");
+          }
         })
         .catch((error) => {
-          console.error("Error:", error); // Log any errors
-          // Display an error message to the user
+          console.error("Error:", error);
           alert("Invalid username or password. Please try again.");
         });
     },
