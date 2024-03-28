@@ -118,11 +118,14 @@ def add_book():
     name = data.get('name')
     content = data.get('content')
     author = data.get('author')
+    count = data.get('count')
+    available = data.get('available')
+    price = data.get('price')
 
-    if not all([name, content, author]):
+    if not all([name, content, author, count, available, price]):
         return jsonify({'message': 'Missing required data'}), 400
 
-    new_book = Book(name=name, content=content, author=author)
+    new_book = Book(name=name, content=content, author=author, count=count, available= available, price=price)
     # Add more attributes as needed
 
     db.session.add(new_book)
@@ -202,10 +205,12 @@ def edit_book(book_id):
         book.content = data['content']
     if 'author' in data:
         book.author = data['author']
-    if 'num_pages' in data:
-        book.num_pages = data['num_pages']
-    if 'volume' in data:
-        book.volume = data['volume']
+    if 'count' in data:
+        book.count = data['count']
+    if 'available' in data:
+        book.available = data['available']
+    if 'price' in data:
+        book.price = data['price']
     # Add more attributes as needed
 
     db.session.commit()
