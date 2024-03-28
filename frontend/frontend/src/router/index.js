@@ -1,3 +1,4 @@
+import HelloWorld from "@/components/HelloWorld.vue";
 import LoginForm from "@/components/LoginForm.vue";
 import RegisterForm from "@/components/RegisterForm.vue";
 import Shark from "@/components/Shark.vue";
@@ -7,6 +8,11 @@ import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: "/",
+    name: "HelloWorld",
+    component: HelloWorld,
+  },
   {
     path: "/shark",
     name: "Shark",

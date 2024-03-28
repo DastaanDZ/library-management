@@ -1,52 +1,54 @@
 <template>
   <div class="vue-tempalte">
     <Navbar />
-    <form @submit.prevent="submitForm">
-      <h3>Sign Up</h3>
-      <div class="mb-3">
-        <label>Full Name</label>
-        <input
-          v-model.trim="fullName"
-          type="text"
-          class="form-control form-control-lg"
-          :class="{ 'is-invalid': errors.fullName }"
-        />
-        <div class="invalid-feedback" v-if="errors.fullName">
-          {{ errors.fullName }}
+    <div class="main-div">
+      <form @submit.prevent="submitForm">
+        <h3>Sign Up</h3>
+        <div class="mb-3">
+          <label>Full Name</label>
+          <input
+            v-model.trim="fullName"
+            type="text"
+            class="form-control form-control-lg"
+            :class="{ 'is-invalid': errors.fullName }"
+          />
+          <div class="invalid-feedback" v-if="errors.fullName">
+            {{ errors.fullName }}
+          </div>
         </div>
-      </div>
-      <div class="mb-3">
-        <label>Email address</label>
-        <input
-          v-model.trim="email"
-          type="email"
-          class="form-control form-control-lg"
-          :class="{ 'is-invalid': errors.email }"
-        />
-        <div class="invalid-feedback" v-if="errors.email">
-          {{ errors.email }}
+        <div class="mb-3">
+          <label>Email address</label>
+          <input
+            v-model.trim="email"
+            type="email"
+            class="form-control form-control-lg"
+            :class="{ 'is-invalid': errors.email }"
+          />
+          <div class="invalid-feedback" v-if="errors.email">
+            {{ errors.email }}
+          </div>
         </div>
-      </div>
-      <div class="mb-3">
-        <label>Password</label>
-        <input
-          v-model.trim="password"
-          type="password"
-          class="form-control form-control-lg"
-          :class="{ 'is-invalid': errors.password }"
-        />
-        <div class="invalid-feedback" v-if="errors.password">
-          {{ errors.password }}
+        <div class="mb-3">
+          <label>Password</label>
+          <input
+            v-model.trim="password"
+            type="password"
+            class="form-control form-control-lg"
+            :class="{ 'is-invalid': errors.password }"
+          />
+          <div class="invalid-feedback" v-if="errors.password">
+            {{ errors.password }}
+          </div>
         </div>
-      </div>
-      <button type="submit" class="btn btn-dark btn-lg btn-block">
-        Sign Up
-      </button>
-      <p class="forgot-password text-right">
-        Already registered
-        <router-link :to="{ name: 'login' }">sign in?</router-link>
-      </p>
-    </form>
+        <button type="submit" class="btn btn-dark btn-lg btn-block">
+          Sign Up
+        </button>
+        <p class="forgot-password text-right">
+          Already registered
+          <router-link :to="{ name: 'LoginForm' }">sign in?</router-link>
+        </p>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -117,3 +119,18 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.main-div {
+  width: 100%;
+  height: 70vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+}
+</style>
