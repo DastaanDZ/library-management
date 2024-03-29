@@ -2,6 +2,7 @@ import LandingPage from "@/components/LandingPage.vue";
 import LoginForm from "@/components/LoginForm.vue";
 import RegisterForm from "@/components/RegisterForm.vue";
 import Shark from "@/components/Shark.vue";
+import UserEditForm from "@/components/UserEditForm.vue";
 import UserInfo from "@/components/UserInfo.vue";
 import Vue from "vue";
 import VueRouter from "vue-router";
@@ -39,6 +40,11 @@ const routes = [
     path: "/user-info",
     name: "UserInfo",
     component: UserInfo,
+  },
+  {
+    path: "/user-edit",
+    name: "UserEditForm",
+    component: UserEditForm,
   },
 ];
 

@@ -28,6 +28,36 @@ def register():
     new_user.save()
     return jsonify({'message': 'User created successfully!'}), 201
 
+@jwt_required()
+@app.route('/edit-user/<int:user_id>', methods=['PUT'])
+def edit_user(user_id):
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'message': 'No data provided'}), 400
+
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'message': 'User not found'}), 404
+
+        # Update user attributes
+        if 'username' in data:
+            user.username = data['username']
+        if 'email' in data:
+            user.email = data['email']
+        if 'password' in data:
+            user.password = data['password']
+        if 'role' in data:
+            user.role = data['role']
+        # Add more attributes as needed
+
+        db.session.commit()
+        return jsonify({'message': 'User updated successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
+
+
 # User Login
 @app.route('/login', methods=['POST'])
 def login():
@@ -41,6 +71,7 @@ def login():
     db.session.commit()  # Commit changes to the database
 
     access_token = create_access_token(identity=user.id)
+    print(access_token)
     return jsonify({'access_token': access_token}), 200
 
 # Protected Route Example

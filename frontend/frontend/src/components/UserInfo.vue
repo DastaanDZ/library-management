@@ -65,7 +65,9 @@
               </div>
             </div>
           </div>
-          <button type="button" class="btn btn-primary m-2">Edit</button>
+          <router-link :to="{ name: 'UserEditForm' }">
+            <button type="button" class="btn btn-primary m-2">Edit</button>
+          </router-link>
         </div>
       </div>
     </div>
