@@ -28,6 +28,25 @@ def register():
     new_user.save()
     return jsonify({'message': 'User created successfully!'}), 201
 
+# Endpoint to get user info
+@jwt_required()
+@app.route('/user-info/<int:user_id>', methods=['GET'])
+def user_info(user_id):
+
+    user = User.query.get(user_id)
+
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+
+    user_info = {
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+        'role': user.role
+    }
+
+    return jsonify(user_info), 200
+
 @jwt_required()
 @app.route('/edit-user/<int:user_id>', methods=['PUT'])
 def edit_user(user_id):
@@ -101,6 +120,80 @@ def request_book(book_id):
     
     return jsonify({'message': 'Book requested successfully'}), 201
 
+@app.route('/requested-books/<int:user_id>', methods=['GET'])
+@jwt_required()
+def get_requested_books(user_id):
+    # Get the current user ID from the JWT token
+    current_user_id = get_jwt_identity()
+
+    # Check if the current user is authorized to access requested books for the specified user ID
+    if current_user_id != user_id:
+        return jsonify({'message': 'Unauthorized access'}), 403
+
+    # Query the database to retrieve the list of requested books for the user
+    requested_books = Request.query.filter_by(user_id=user_id).all()
+
+    # Initialize an empty list to store serialized requested book data
+    requested_books_data = []
+
+    # Loop through each requested book and serialize its data
+    for request in requested_books:
+        # Query the Book model to get the details of the requested book
+        book = Book.query.get(request.book_id)
+        if book:
+            # Serialize the requested book data along with additional book details
+            requested_book_data = {
+                'id': request.id,
+                'user_id': request.user_id,
+                'book_id': request.book_id,
+                'name': book.name,
+                'author': book.author,
+                # Add more book details as needed
+            }
+            # Append the serialized requested book data to the list
+            requested_books_data.append(requested_book_data)
+    print(requested_books_data)
+    # Return the serialized requested books data as a JSON response
+    return jsonify(requested_books_data), 200
+
+@app.route('/issued-books/<int:user_id>', methods=['GET'])
+@jwt_required()
+def get_issued_books(user_id):
+    # Get the current user ID from the JWT token
+    current_user_id = get_jwt_identity()
+
+    # Check if the current user is authorized to access issued books for the specified user ID
+    if current_user_id != user_id:
+        return jsonify({'message': 'Unauthorized access'}), 403
+
+    # Query the database to retrieve the list of issued books for the user
+    issued_books = IssuedBook.query.filter_by(user_id=user_id).all()
+
+    # Initialize an empty list to store serialized issued book data
+    issued_books_data = []
+
+    # Loop through each issued book and serialize its data
+    for issued_book in issued_books:
+        # Query the Book model to get the details of the issued book
+        book = Book.query.get(issued_book.book_id)
+        if book:
+            # Serialize the issued book data along with additional book details
+            issued_book_data = {
+                'id': issued_book.id,
+                'user_id': issued_book.user_id,
+                'book_id': issued_book.book_id,
+                'name': book.name,
+                'author': book.author,
+                'issue_date': issued_book.issue_date.strftime('%Y-%m-%d %H:%M:%S'),
+                'return_date': issued_book.return_date.strftime('%Y-%m-%d %H:%M:%S') if issued_book.return_date else None,
+                # Add more book details as needed
+            }
+            # Append the serialized issued book data to the list
+            issued_books_data.append(issued_book_data)
+
+    # Return the serialized issued books data as a JSON response
+    return jsonify(issued_books_data), 200
+
 # Return a book
 @app.route('/return-book/<int:book_id>', methods=['POST'])
 @jwt_required()
@@ -171,7 +264,7 @@ def issue_book(user_id):
     for book_id in book_ids:
         book = Book.query.get(book_id)
         if book and book.available:
-            issued_book = IssuedBook(user_id=user_id, book_id=book_id, librarian_id=librarian_id)
+            issued_book = IssuedBook(user_id=user_id, book_id=book_id, librarian_id=1)
             book.count -= 1
             if book.count == 0:
                 book.available = False
@@ -313,11 +406,17 @@ def view_available_books():
     available_books = Book.query.filter_by(available=True).all()
     return jsonify({'available_books': [book.serialize() for book in available_books]}), 200
 
+
 @app.route('/books')
 @jwt_required()
 def list_books():
     books = Book.query.all()
-    return render_template('books.html', books=books)
+    # Serialize each book object
+    # print(books)
+    serialized_books = [book.serialize() for book in books]
+    print(serialized_books)
+    return jsonify(serialized_books)
+
 
 @app.route('/buy/<int:book_id>')
 @jwt_required()

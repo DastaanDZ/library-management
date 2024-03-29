@@ -5,10 +5,10 @@
     <div class="container-fluid">
       <!-- Toggle button -->
       <button
-        data-mdb-collapse-init
         class="navbar-toggler"
         type="button"
-        data-mdb-target="#navbarSupportedContent"
+        data-toggle="collapse"
+        data-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent"
         aria-expanded="false"
         aria-label="Toggle navigation"
@@ -19,24 +19,26 @@
       <!-- Collapsible wrapper -->
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <!-- Navbar brand -->
-        <a class="navbar-brand mt-2 mt-lg-0" href="#">
+        <router-link to="/" class="navbar-brand mt-2 mt-lg-0">
           <img
             src="https://mdbcdn.b-cdn.net/img/logo/mdb-transaprent-noshadows.webp"
             height="15"
             alt="MDB Logo"
             loading="lazy"
           />
-        </a>
+        </router-link>
         <!-- Left links -->
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link" href="#">Dashboard</a>
+            <router-link to="/dashboard" class="nav-link"
+              >Dashboard</router-link
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Team</a>
+            <router-link to="/team" class="nav-link">Team</router-link>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Projects</a>
+            <router-link to="/projects" class="nav-link">Projects</router-link>
           </li>
         </ul>
         <!-- Left links -->
@@ -54,7 +56,7 @@
               alt="Black and White Portrait of a Man"
               loading="lazy"
             />
-            UserName
+            {{ msg }}
           </a>
         </div>
       </div>
@@ -69,7 +71,10 @@
 export default {
   name: "Navbar",
   props: {
-    msg: String,
+    msg: {
+      type: String,
+      default: "UserName",
+    },
   },
 };
 </script>

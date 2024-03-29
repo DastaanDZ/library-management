@@ -2,18 +2,25 @@
   <div class="main">
     <div class="user-div">
       <div class="dp">
-        <img src="./book.jpg" alt="" />
+        <img :src="require('./book.jpg')" alt="" />
       </div>
-      <h3>Hello, User Name</h3>
+      <h3>Hello, {{ username }}</h3>
     </div>
-    <button type="button" class="btn btn-primary">
+    <router-link to="/user-info" class="btn btn-primary">
       Edit Personal<br />Details
-    </button>
+    </router-link>
   </div>
 </template>
+
 <script>
 export default {
   name: "UserDetail",
+  props: {
+    username: {
+      type: String,
+      required: true,
+    },
+  },
 };
 </script>
 

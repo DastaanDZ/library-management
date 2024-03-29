@@ -123,7 +123,7 @@ export default {
 
 <style>
 body {
-  background-color: #dee9ff;
+  /* background-color: #dee9ff; */
 }
 
 .registration-form {

@@ -1,14 +1,8 @@
 <template>
   <div class="main-div">
-    <h2>Books Available</h2>
+    <h2>{{ heading }}</h2>
     <div class="cards">
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
-      <Card />
+      <Card v-for="(book, index) in books" :key="index" :book="book" />
     </div>
     <h6>
       <a><router-link :to="{ name: 'ViewAll' }">ViewAll</router-link></a>
@@ -18,9 +12,19 @@
 
 <script>
 import Card from "./Card.vue";
+
 export default {
   name: "BooksAvailable",
   components: { Card },
+  props: {
+    books: {
+      type: Array,
+      required: true,
+    },
+    heading: {
+      type: String,
+    },
+  },
 };
 </script>
 
