@@ -5,6 +5,7 @@ import Shark from "@/components/Shark.vue";
 import UserInfo from "@/components/UserInfo.vue";
 import Vue from "vue";
 import VueRouter from "vue-router";
+import ViewAll from "@/components/ViewAll.vue";
 
 Vue.use(VueRouter);
 
@@ -13,6 +14,11 @@ const routes = [
     path: "/",
     name: "LandingPage",
     component: LandingPage,
+  },
+  {
+    path: "/viewall",
+    name: "ViewAll",
+    component: ViewAll,
   },
   {
     path: "/shark",

@@ -10,6 +10,9 @@
       <Card />
       <Card />
     </div>
+    <h6>
+      <a><router-link :to="{ name: 'ViewAll' }">ViewAll</router-link></a>
+    </h6>
   </div>
 </template>
 
@@ -25,6 +28,8 @@ export default {
 .cards {
   display: flex;
   gap: 2rem;
+  width: 100%;
+  justify-content: center;
 }
 .main-div {
   display: flex;
@@ -34,5 +39,19 @@ export default {
   background-color: white;
   border-radius: 1rem;
   gap: 1rem;
+}
+.main-div h6 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.main-div h6 a {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+}
+.main-div h6 a:hover {
+  color: blue;
 }
 </style>

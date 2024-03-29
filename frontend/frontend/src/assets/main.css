@@ -4,7 +4,7 @@
 body {
   min-height: 100vh;
   font-weight: 400;
-  width: 100vw;
+  width: 100%;
   background: rgb(240, 229, 241);
 }
 ul {
