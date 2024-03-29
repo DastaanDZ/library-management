@@ -12,6 +12,8 @@ import LightCard from "@/components/LightCard.vue";
 import AddBookForm from "@/components/AddBookForm.vue";
 import EditBookForm from "@/components/EditBookForm.vue";
 import MonitorTable from "@/components/MonitorTable.vue";
+import CardDetails from "@/components/CardDetails.vue";
+import UserDetail from "@/components/UserDetail.vue";
 
 Vue.use(VueRouter);
 
@@ -22,9 +24,19 @@ const routes = [
     component: LandingPage,
   },
   {
+    path: "/userdetail",
+    name: "UserDetail",
+    component: UserDetail,
+  },
+  {
     path: "/viewall",
     name: "ViewAll",
     component: ViewAll,
+  },
+  {
+    path: "/carddetails",
+    name: "CardDetails",
+    component: CardDetails,
   },
   {
     path: "/shark",

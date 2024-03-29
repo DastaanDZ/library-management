@@ -2,6 +2,7 @@
   <div>
     <Navbar />
     <div class="main-page">
+      <UserDetail />
       <NewArrival />
       <BooksAvailable />
       <BookIssued />
@@ -18,11 +19,13 @@ import BookIssued from "./BookIssued.vue";
 import BookRequested from "./BookRequested.vue";
 import BookReturned from "./BookReturned.vue";
 import BooksAvailable from "./BooksAvailable.vue";
+import UserDetail from "./UserDetail.vue";
 
 export default {
   name: "LandingPage",
   components: {
     Navbar,
+    UserDetail,
     BookIssued,
     BookRequested,
     BookReturned,
