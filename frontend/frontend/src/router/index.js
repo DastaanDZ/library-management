@@ -8,6 +8,10 @@ import UserInfo from "@/components/UserInfo.vue";
 import Vue from "vue";
 import VueRouter from "vue-router";
 import ViewAll from "@/components/ViewAll.vue";
+import LightCard from "@/components/LightCard.vue";
+import AddBookForm from "@/components/AddBookForm.vue";
+import EditBookForm from "@/components/EditBookForm.vue";
+import MonitorTable from "@/components/MonitorTable.vue";
 import CardDetails from "@/components/CardDetails.vue";
 import UserDetail from "@/components/UserDetail.vue";
 
@@ -63,6 +67,26 @@ const routes = [
     path: "/sidebar",
     name: "Sidebar",
     component: Sidebar,
+  },
+  {
+    path: "/light-card",
+    name: "LightCard",
+    component: LightCard,
+  },
+  {
+    path: "/add-book",
+    name: "AddBookForm",
+    component: AddBookForm,
+  },
+  {
+    path: "/edit-book",
+    name: "EditBookForm",
+    component: EditBookForm,
+  },
+  {
+    path: "/monitor",
+    name: "MonitorTable",
+    component: MonitorTable,
   },
 ];
 

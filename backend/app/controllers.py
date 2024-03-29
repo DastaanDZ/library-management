@@ -72,15 +72,8 @@ def login():
 
     access_token = create_access_token(identity=user.id)
     print(access_token)
-    return jsonify({'access_token': access_token}), 200
+    return jsonify({'access_token': access_token, 'role': user.role}), 200
 
-# Protected Route Example
-@app.route('/protected', methods=['GET'])
-@jwt_required()
-def protected():
-    current_user = get_jwt_identity()
-    user = User.query.filter_by(id=current_user).first()
-    return jsonify({'username': user.username, 'email': user.email}), 200
 
 @app.route('/sections', methods=['GET'])
 @jwt_required()
