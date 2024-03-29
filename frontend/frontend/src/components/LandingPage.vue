@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="parent-div">
     <Navbar />
     <div class="main-page">
       <UserDetail />
@@ -36,10 +36,15 @@ export default {
 </script>
 
 <style scoped>
+.parent-div {
+  display: flex;
+  flex-direction: column;
+  padding: 0 2rem;
+  gap: 2rem;
+}
 .main-page {
   display: flex;
   flex-direction: column;
   gap: 2rem;
-  padding: 2rem;
 }
 </style>

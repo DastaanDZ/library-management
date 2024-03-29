@@ -77,5 +77,6 @@ export default {
 <style scoped>
 nav {
   padding: 0.5rem 2rem;
+  border-radius: 1rem;
 }
 </style>

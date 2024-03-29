@@ -1,16 +1,14 @@
 <template>
-  <div class="parent">
-    <div class="main">
-      <div class="user-div">
-        <div class="dp">
-          <img src="./book.jpg" alt="" />
-        </div>
-        <h3>Hello, User Name</h3>
+  <div class="main">
+    <div class="user-div">
+      <div class="dp">
+        <img src="./book.jpg" alt="" />
       </div>
-      <button type="button" class="btn btn-primary">
-        Edit Personal<br />Details
-      </button>
+      <h3>Hello, User Name</h3>
     </div>
+    <button type="button" class="btn btn-primary">
+      Edit Personal<br />Details
+    </button>
   </div>
 </template>
 <script>
@@ -20,9 +18,6 @@ export default {
 </script>
 
 <style scoped>
-.parent {
-  padding: 0 2rem;
-}
 .main {
   display: flex;
   align-items: center;

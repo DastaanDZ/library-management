@@ -6,6 +6,8 @@ body {
   font-weight: 400;
   width: 100%;
   background: rgb(240, 229, 241);
+  margin: 0;
+  padding: 0;
 }
 ul {
   list-style: none;
