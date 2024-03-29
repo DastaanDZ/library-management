@@ -74,9 +74,14 @@ export default {
         .post(path, formData)
         .then((response) => {
           // Check if access token is present in the response data
-          if (response.data && response.data.access_token) {
+          if (
+            response.data &&
+            response.data.access_token &&
+            response.data.role
+          ) {
             // Store the access token in localStorage
             localStorage.setItem("accessToken", response.data.access_token);
+            localStorage.setItem("role", response.data.role);
             console.log("token set in local storage");
             // Redirect to the dashboard after successful login
             this.$router.push("/user-info");

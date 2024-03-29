@@ -1,50 +1,60 @@
 <template>
   <div class="registration-form">
-    <h1>EDIT PROFILE</h1>
+    <h1>ADD BOOKS</h1>
     <form @submit.prevent="saveChanges">
       <div class="form-group text-start mb-1">
-        <label for="username">Username:</label>
+        <label for="name">Name:</label>
         <input
-          v-model="userData.username"
+          v-model="bookData.name"
           type="text"
           class="form-control item"
-          id="username"
-          placeholder="Username"
+          id="name"
+          placeholder="Name"
         />
       </div>
       <div class="form-group text-start mb-1">
-        <label for="password">Password:</label>
+        <label for="content">Content:</label>
         <input
-          v-model="userData.password"
-          type="password"
+          v-model="bookData.content"
+          type="text"
           class="form-control item"
-          id="password"
-          placeholder="Password"
+          id="content"
+          placeholder="Content"
         />
       </div>
       <div class="form-group text-start mb-1">
-        <label for="email">Email:</label>
+        <label for="author">Author:</label>
         <input
-          v-model="userData.email"
+          v-model="bookData.author"
           type="text"
           class="form-control item"
-          id="email"
-          placeholder="Email"
+          id="author"
+          placeholder="Author"
         />
       </div>
       <div class="form-group text-start mb-1">
-        <label for="role">Role:</label>
+        <label for="count">Count:</label>
         <input
-          v-model="userData.role"
-          type="text"
+          v-model="bookData.count"
+          type="number"
           class="form-control item"
-          id="role"
-          placeholder="Role"
+          id="count"
+          placeholder="Count"
+        />
+      </div>
+      <div class="form-group text-start mb-1">
+        <label for="price">Price:</label>
+        <input
+          v-model="bookData.price"
+          type="number"
+          class="form-control item"
+          id="price"
+          placeholder="Price"
         />
       </div>
       <div class="form-group text-start mb-1">
         <button type="submit" class="btn btn-block create-account">
-          Save Changes
+          Add Book
         </button>
       </div>
     </form>
@@ -53,58 +63,59 @@
 
 <script>
 import axios from "axios";
-import { jwtDecode } from "jwt-decode";
 
 export default {
-  name: "UserEditForm",
+  name: "AddBookForm",
   data() {
     return {
-      userData: {
-        username: "",
-        password: "",
-        email: "",
-        role: "",
+      bookData: {
+        name: "",
+        content: "",
+        author: "",
+        count: 0,
+        available: true,
+        price: 0,
       },
     };
   },
   methods: {
     async saveChanges() {
       try {
-        // Retrieve access token from localStorage
+        // Check if user role is librarian
+        if (this.userRole !== "librarian") {
+          alert("Only librarians can add books");
+          return;
+        }
+
+        // Get access token from localStorage
         const accessToken = localStorage.getItem("accessToken");
 
-        if (!accessToken) {
-          throw new Error("Access token not found");
-        }
-
-        // Decode the access token to extract user ID
-        const decodedToken = jwtDecode(accessToken);
-        console.log(decodedToken);
-        const userId = decodedToken.sub;
-
-        // Check if user ID is valid
-        if (!userId) {
-          throw new Error("Invalid user ID");
-        }
-
-        // Make PUT request to update user data
-        const response = await axios.put(
-          `http://127.0.0.1:5000/edit-user/${userId}`,
-          this.userData
+        // Proceed with adding book if user is a librarian
+        const response = await axios.post(
+          "http://127.0.0.1:5000/add-book",
+          this.bookData,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`, // Include access token in the request headers
+            },
+          }
         );
         console.log(response.data);
-        // Optionally, you can show a success message or redirect the user after successful update
+        // Optionally, you can show a success message or redirect the user after successful addition
       } catch (error) {
-        console.error("Error updating user:", error);
+        console.error("Error adding book:", error);
         // Handle error - e.g., show an error message to the user
-        if (error.response && error.response.status === 401) {
-          // Unauthorized access, redirect to login page
-          this.$router.push("/login");
-        } else {
-          // Other errors, redirect to user info page
-          this.$router.push("/user-info");
-        }
       }
+    },
+  },
+  computed: {
+    userRole() {
+      const role = localStorage.getItem("role");
+
+      if (!role) {
+        return null; // Or any default value as per your application logic
+      }
+      return role; // Assuming 'role' is the key containing the user's role in the token payload
     },
   },
 };
