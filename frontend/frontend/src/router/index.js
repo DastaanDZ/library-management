@@ -2,6 +2,7 @@ import LandingPage from "@/components/LandingPage.vue";
 import LoginForm from "@/components/LoginForm.vue";
 import RegisterForm from "@/components/RegisterForm.vue";
 import Shark from "@/components/Shark.vue";
+import Sidebar from "@/components/Sidebar.vue";
 import UserEditForm from "@/components/UserEditForm.vue";
 import UserInfo from "@/components/UserInfo.vue";
 import Vue from "vue";
@@ -57,6 +58,11 @@ const routes = [
     path: "/user-edit",
     name: "UserEditForm",
     component: UserEditForm,
+  },
+  {
+    path: "/sidebar",
+    name: "Sidebar",
+    component: Sidebar,
   },
 ];
 
