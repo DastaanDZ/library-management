@@ -7,6 +7,8 @@ import UserInfo from "@/components/UserInfo.vue";
 import Vue from "vue";
 import VueRouter from "vue-router";
 import ViewAll from "@/components/ViewAll.vue";
+import CardDetails from "@/components/CardDetails.vue";
+import UserDetail from "@/components/UserDetail.vue";
 
 Vue.use(VueRouter);
 
@@ -17,9 +19,19 @@ const routes = [
     component: LandingPage,
   },
   {
+    path: "/userdetail",
+    name: "UserDetail",
+    component: UserDetail,
+  },
+  {
     path: "/viewall",
     name: "ViewAll",
     component: ViewAll,
+  },
+  {
+    path: "/carddetails",
+    name: "CardDetails",
+    component: CardDetails,
   },
   {
     path: "/shark",
