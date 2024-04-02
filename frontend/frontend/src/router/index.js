@@ -14,6 +14,7 @@ import EditBookForm from "@/components/EditBookForm.vue";
 import MonitorTable from "@/components/MonitorTable.vue";
 import CardDetails from "@/components/CardDetails.vue";
 import UserDetail from "@/components/UserDetail.vue";
+import Search from "@/components/Search.vue";
 
 Vue.use(VueRouter);
 
@@ -34,7 +35,7 @@ const routes = [
     component: ViewAll,
   },
   {
-    path: "/carddetails/:id",
+    path: "/carddetails/:book_id",
     name: "CardDetails",
     component: CardDetails,
     props: true,
@@ -88,6 +89,11 @@ const routes = [
     path: "/monitor",
     name: "MonitorTable",
     component: MonitorTable,
+  },
+  {
+    path: "/search",
+    name: "Search",
+    component: Search,
   },
 ];
 

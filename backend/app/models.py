@@ -24,6 +24,9 @@ class Book(db.Model):
     count = db.Column(db.Integer())
     available = db.Column(db.Boolean())
     price = db.Column(db.Integer(), nullable=False)
+    
+    # Define the foreign key to establish the relationship with the Section model
+    section_id = db.Column(db.Integer(), db.ForeignKey('section.id'))
 
     def serialize(self):
         return {
@@ -33,7 +36,7 @@ class Book(db.Model):
             'author': self.author,
             'count': self.count,
             'available': self.available,
-            'price' : self.price
+            'price': self.price
             # Add more attributes as needed
         }
 
@@ -61,13 +64,17 @@ class Section(db.Model):
     name = db.Column(db.String(255), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.now())
     description = db.Column(db.Text)
+    
+    # Define the relationship with the Book model
+    books = db.relationship('Book', backref='section', lazy=True)
 
     def serialize(self):
         return {
             'id': self.id,
             'name': self.name,
             'date_created': self.date_created.strftime('%Y-%m-%d'),
-            'description': self.description
+            'description': self.description,
+            'books': [book.serialize() for book in self.books]  # Serialize associated books
         }
     
 # models.py

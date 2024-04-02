@@ -5,8 +5,10 @@
       <h5 class="card-title">{{ book.name }}</h5>
       <h6 class="card-subtitle">{{ book.author }}</h6>
       <router-link
-        :to="{ name: 'CardDetails', params: { id: book.id } }"
-        class="btn btn-primary mt-3"
+        :to="{
+          name: 'CardDetails',
+          params: { book_id: book.book_id ? book.book_id : book.id },
+        }"
       >
         View Details
       </router-link>

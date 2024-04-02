@@ -9,6 +9,6 @@ class Config():
 
 class LocalDevelopmentConfig(Config):
     SQLITE_DB_DIR = os.path.join(basedir, "../db_directory")
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "testdb.sqlite3")
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "testdb1.sqlite3")
     SECRET_KEY = 'your-secret-key'
     DEBUG = True

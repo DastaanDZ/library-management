@@ -65,7 +65,9 @@ def edit_user(user_id):
         if 'email' in data:
             user.email = data['email']
         if 'password' in data:
-            user.password = data['password']
+            # Hash the new password before updating
+            hashed_password = generate_password_hash(data['password'], method='sha256')
+            user.password = hashed_password
         if 'role' in data:
             user.role = data['role']
         # Add more attributes as needed
@@ -75,7 +77,6 @@ def edit_user(user_id):
 
     except Exception as e:
         return jsonify({'message': 'An error occurred', 'error': str(e)}), 500
-
 
 # User Login
 @app.route('/login', methods=['POST'])
@@ -157,16 +158,7 @@ def get_requested_books(user_id):
     return jsonify(requested_books_data), 200
 
 @app.route('/issued-books/<int:user_id>', methods=['GET'])
-@jwt_required()
 def get_issued_books(user_id):
-    # Get the current user ID from the JWT token
-    current_user_id = get_jwt_identity()
-
-    # Check if the current user is authorized to access issued books for the specified user ID
-    if current_user_id != user_id:
-        return jsonify({'message': 'Unauthorized access'}), 403
-
-    # Query the database to retrieve the list of issued books for the user
     issued_books = IssuedBook.query.filter_by(user_id=user_id).all()
 
     # Initialize an empty list to store serialized issued book data
@@ -467,3 +459,22 @@ def get_book_details(book_id):
 
     # Return the book details in JSON format
     return jsonify(book_details), 200
+
+
+@app.route('/sections', methods=['GET'])
+def search_section():
+    query = request.args.get('query')  # Get the search query from the request parameters
+    sections = Section.query.filter(Section.name.ilike(f'%{query}%')).all()  # Search for sections containing the query
+    serialized_sections = [section.serialize() for section in sections]  # Serialize sections
+    return jsonify(serialized_sections), 200
+
+@app.route('/books', methods=['GET'])
+def search_books():
+    query = request.args.get('query')  # Get the search query from the request parameters
+    books = Book.query.filter(
+        (Book.name.ilike(f'%{query}%')) |
+        (Book.author.ilike(f'%{query}%')) |
+        (Book.content.ilike(f'%{query}%'))
+    ).all()  # Search for books containing the query in name, author, or content
+    serialized_books = [book.serialize() for book in books]  # Serialize books
+    return jsonify(serialized_books), 200
