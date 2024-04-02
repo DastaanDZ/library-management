@@ -450,3 +450,20 @@ def generate_pdf(book):
     </html>
     """
     pdfkit.from_string(html_content, f'pdfs/{book.name}.pdf')
+
+
+@app.route('/books/<int:book_id>', methods=['GET'])
+@jwt_required()
+def get_book_details(book_id):
+    # Query the database to retrieve the book details based on the provided ID
+    book = Book.query.get(book_id)
+
+    if not book:
+        # If book with the provided ID is not found, return a 404 Not Found response
+        return jsonify({'message': 'Book not found'}), 404
+
+    # Serialize the book object into JSON format
+    book_details = book.serialize()
+
+    # Return the book details in JSON format
+    return jsonify(book_details), 200

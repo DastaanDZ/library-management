@@ -2,7 +2,7 @@
   <div class="main">
     <div class="user-div">
       <div class="dp">
-        <img :src="require('./book.jpg')" alt="" />
+        <img src="./book.jpg" alt="" />
       </div>
       <h3>Hello, {{ username }}</h3>
     </div>

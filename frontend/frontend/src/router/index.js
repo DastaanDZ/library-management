@@ -34,9 +34,10 @@ const routes = [
     component: ViewAll,
   },
   {
-    path: "/carddetails",
+    path: "/carddetails/:id",
     name: "CardDetails",
     component: CardDetails,
+    props: true,
   },
   {
     path: "/shark",
