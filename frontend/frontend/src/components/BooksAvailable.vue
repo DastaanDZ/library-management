@@ -2,11 +2,21 @@
   <div class="main-div">
     <h2>{{ heading }}</h2>
     <div class="cards">
-      <Card v-for="(book, index) in books" :key="index" :book="book" />
+      <Card
+        v-for="(book, index) in books.slice(0, 5)"
+        :key="index"
+        :book="book"
+      />
       <p v-if="books.length === 0">You Dont Have Any {{ heading }}</p>
     </div>
     <h6>
-      <a><router-link :to="{ name: 'ViewAll' }">ViewAll</router-link></a>
+      <a
+        ><router-link
+          :to="{ name: 'ViewAll', props: { books: books, heading: heading } }"
+        >
+          <button class="btn btn-primary" type="submit">View All</button>
+        </router-link></a
+      >
     </h6>
   </div>
 </template>

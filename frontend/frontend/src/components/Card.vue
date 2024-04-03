@@ -4,15 +4,15 @@
     <div class="card-body">
       <h5 class="card-title">{{ book.name }}</h5>
       <h6 class="card-subtitle">{{ book.author }}</h6>
-      <router-link
-        :to="{
-          name: 'CardDetails',
-          params: { book_id: book.book_id ? book.book_id : book.id },
-        }"
-      >
-        View Details
-      </router-link>
     </div>
+    <router-link
+      :to="{
+        name: 'CardDetails',
+        params: { book_id: book.book_id ? book.book_id : book.id },
+      }"
+    >
+      <button class="btn btn-primary mt-3" type="submit">View Details</button>
+    </router-link>
   </div>
 </template>
 

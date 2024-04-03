@@ -14,22 +14,9 @@
       </div>
     </nav>
     <div class="main-div">
-      <h2>Book Issued</h2>
+      <h2>{{ heading }}</h2>
       <div class="cards">
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
-        <Card />
+        <Card v-for="(book, index) in books" :key="index" :book="book" />
       </div>
     </div>
   </div>
@@ -37,9 +24,20 @@
 
 <script>
 import Card from "./Card.vue";
+
 export default {
   name: "ViewAll",
   components: { Card },
+  props: {
+    books: {
+      type: Array,
+      required: true,
+    },
+    heading: {
+      type: String,
+      required: true,
+    },
+  },
 };
 </script>
 

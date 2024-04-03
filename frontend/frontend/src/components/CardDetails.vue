@@ -32,6 +32,11 @@
                 Request Book
               </button>
             </div>
+            <div v-else>
+              <button class="btn btn-secondary" disabled>
+                Book Already Requested
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -65,6 +70,7 @@ export default {
   async mounted() {
     // Fetch book details based on the ID prop
     const accessToken = localStorage.getItem("accessToken");
+    this.userRole = localStorage.getItem("role");
 
     if (!accessToken) {
       console.error("Access token not found in localStorage");
@@ -74,8 +80,23 @@ export default {
     const decodedToken = jwtDecode(accessToken);
     this.user_id = decodedToken.sub; // Set user_id
 
+    const response = await axios.get(
+      `http://127.0.0.1:5000/requested-books/${this.user_id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+
+    const requestedBooks = response.data;
+
+    this.bookIssued = requestedBooks.some(
+      (book) => book.book_id === parseInt(this.book_id)
+    );
+    console.log("BOOK REQUESTED", this.bookIssued);
+
     await this.fetchBookDetails();
-    await this.getUserIssuedBooks();
   },
   methods: {
     async fetchBookDetails() {
@@ -98,47 +119,38 @@ export default {
         console.error("Error fetching book details:", error);
       }
     },
+    // async getUserRequestedBooks() {
+    //   try {
+    //     const accessToken = localStorage.getItem("accessToken");
 
-    async getUserIssuedBooks() {
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:5000/issued-books/${this.user_id}`
-        );
-        const issuedBooks = response.data;
+    //     const response = await axios.get(
+    //       `http://127.0.0.1:5000/requested-books/${this.user_id}`,
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ${accessToken}`,
+    //         },
+    //       }
+    //     );
 
-        console.log("bookIssued", issuedBooks);
+    //     const requestedBooks = response.data;
 
-        this.bookIssued = issuedBooks.some(
-          (book) => book.book_id === parseInt(this.book_id)
-        );
-      } catch (error) {
-        console.error("Error fetching user issued books:", error);
-      }
-    },
+    //     requestedBooks.map((book) => {
+    //       console.log("Book:", book);
+    //       console.log("ID:", book.id);
+    //       console.log("Name:", book.name);
+    //       console.log("Author:", book.author);
+    //       console.log("Price:", book.price);
+    //       // Add more properties as needed
+    //     });
 
-    async requestBook() {
-      try {
-        const accessToken = localStorage.getItem("accessToken");
-        if (!accessToken) {
-          console.error("Access token not found in localStorage");
-          return;
-        }
-
-        const response = await axios.post(
-          `http://127.0.0.1:5000/request-book/${this.book_id}`,
-          null,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-
-        console.log(response.data.message);
-      } catch (error) {
-        console.error("Error requesting book:", error);
-      }
-    },
+    //     this.bookIssued = requestedBooks.some(
+    //       (book) => book.book_id === parseInt(this.book_id)
+    //     );
+    //     console.log("BOOK REQUESTED", this.bookIssued);
+    //   } catch (error) {
+    //     console.error("Error fetching user requested books:", error);
+    //   }
+    // },
   },
 };
 </script>

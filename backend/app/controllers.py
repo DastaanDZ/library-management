@@ -124,12 +124,6 @@ def request_book(book_id):
 @app.route('/requested-books/<int:user_id>', methods=['GET'])
 @jwt_required()
 def get_requested_books(user_id):
-    # Get the current user ID from the JWT token
-    current_user_id = get_jwt_identity()
-
-    # Check if the current user is authorized to access requested books for the specified user ID
-    if current_user_id != user_id:
-        return jsonify({'message': 'Unauthorized access'}), 403
 
     # Query the database to retrieve the list of requested books for the user
     requested_books = Request.query.filter_by(user_id=user_id).all()
