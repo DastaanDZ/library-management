@@ -40,18 +40,6 @@ class Book(db.Model):
             # Add more attributes as needed
         }
 
-class Request(db.Model):
-    id = db.Column(db.Integer(), primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
-    book_id = db.Column(db.Integer(), db.ForeignKey('book.id'))
-
-    def serialize(self):
-        return {
-            'id': self.id,
-            'user_id': self.user_id,
-            'book_id': self.book_id
-            # Add more attributes as needed
-        }
 
 class Feedback(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -77,9 +65,6 @@ class Section(db.Model):
             'books': [book.serialize() for book in self.books]  # Serialize associated books
         }
     
-# models.py
-from app.database import db
-from datetime import datetime
 
 class IssuedBook(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -97,4 +82,18 @@ class IssuedBook(db.Model):
             'librarian_id': self.librarian_id,
             'issue_date': self.issue_date.strftime('%Y-%m-%d %H:%M:%S'),
             'return_date': self.return_date.strftime('%Y-%m-%d %H:%M:%S') if self.return_date else None
+        }
+
+
+class Request(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    book_id = db.Column(db.Integer(), db.ForeignKey('book.id'))
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'book_id': self.book_id
+            # Add more attributes as needed
         }

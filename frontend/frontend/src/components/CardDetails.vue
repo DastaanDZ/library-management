@@ -12,7 +12,7 @@
           />
         </div>
         <div class="col-md-8">
-          <div class="card-body">
+          <div class="card-body text-start">
             <h5>Name</h5>
             <h5 class="card-title">{{ book.name }}</h5>
             <p>Content</p>
@@ -26,17 +26,34 @@
                 >Last updated: {{ book.lastUpdated }}</small
               >
             </p>
-            <!-- Show buttons based on user role and book status -->
-            <div v-if="userRole === 'user' && !bookIssued">
-              <button @click="requestBook" class="btn btn-primary">
-                Request Book
-              </button>
-            </div>
-            <div v-else>
-              <button class="btn btn-secondary" disabled>
-                Book Already Requested
-              </button>
-            </div>
+          </div>
+          <div class="btn-group">
+            <button
+              v-if="!bookExists"
+              class="btn btn-primary mt-3"
+              type="submit"
+              @click="requestBook"
+            >
+              Request
+            </button>
+
+            <button
+              v-if="bookIssued"
+              class="btn btn-primary mt-3"
+              type="submit"
+              @click="redirectToFeedbackPage"
+            >
+              Feedback
+            </button>
+
+            <button
+              v-if="bookIssued"
+              class="btn btn-primary mt-3"
+              type="submit"
+              @click="returnBook"
+            >
+              Return
+            </button>
           </div>
         </div>
       </div>
@@ -62,9 +79,8 @@ export default {
   data() {
     return {
       book: null,
-      userRole: null,
-      bookIssued: false,
-      user_id: null, // Added user_id to data
+      bookExists: false,
+      bookIssued: false, // Add a new data property to track book existence
     };
   },
   async mounted() {
@@ -91,12 +107,17 @@ export default {
 
     const requestedBooks = response.data;
 
-    this.bookIssued = requestedBooks.some(
+    // Check if the current book ID exists in the list of requested books
+    this.bookExists = requestedBooks.some(
       (book) => book.book_id === parseInt(this.book_id)
     );
-    console.log("BOOK REQUESTED", this.bookIssued);
 
-    await this.fetchBookDetails();
+    if (this.bookExists) {
+      console.log("BOOK is already requested");
+    }
+
+    this.fetchBookDetails();
+    this.checkIssuedStatus();
   },
   methods: {
     async fetchBookDetails() {
@@ -112,45 +133,83 @@ export default {
           }
         );
 
-        this.book = response.data; // Corrected from book to this.book
-        console.log("BOOK", this.book); // Corrected from book to this.book
+        this.book = response.data;
+        console.log("BOOK", this.book);
         console.log(this.book);
       } catch (error) {
         console.error("Error fetching book details:", error);
       }
     },
-    // async getUserRequestedBooks() {
-    //   try {
-    //     const accessToken = localStorage.getItem("accessToken");
+    async checkIssuedStatus() {
+      try {
+        // Fetch issued books for the user
+        const issuedBooksResponse = await axios.get(
+          `http://127.0.0.1:5000/issued-books/${this.user_id}`
+        );
+        const issuedBooks = issuedBooksResponse.data;
+        console.log("ISSUED BOOKS", issuedBooks);
+        this.bookIssued = issuedBooks.some(
+          (book) => book.book_id == this.book_id
+        );
+        console.log("ISSUED STATUS", this.bookIssued);
+      } catch (error) {
+        console.error("Error fetching issued books:", error);
+      }
+    },
+    async requestBook() {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
 
-    //     const response = await axios.get(
-    //       `http://127.0.0.1:5000/requested-books/${this.user_id}`,
-    //       {
-    //         headers: {
-    //           Authorization: `Bearer ${accessToken}`,
-    //         },
-    //       }
-    //     );
+        // Send a POST request to the server to request the book
+        await axios.post(
+          `http://127.0.0.1:5000/request-book/${this.book_id}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
 
-    //     const requestedBooks = response.data;
+        // Update the UI to reflect that the book has been requested
+        this.bookExists = true; // Set bookExists to true after requesting the book
+        alert("Book requested successfully");
+        console.log("Book requested successfully");
+      } catch (error) {
+        console.error("Error requesting book:", error);
+      }
+    },
+    checkBookAvailability() {
+      return this.bookExists; // Return the book existence status
+    },
+    redirectToFeedbackPage() {
+      // Redirect to the feedback page with the book ID
+      this.$router.push(`/feedback/${this.book_id}`);
+    },
+    async returnBook() {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
 
-    //     requestedBooks.map((book) => {
-    //       console.log("Book:", book);
-    //       console.log("ID:", book.id);
-    //       console.log("Name:", book.name);
-    //       console.log("Author:", book.author);
-    //       console.log("Price:", book.price);
-    //       // Add more properties as needed
-    //     });
+        // Send a POST request to the server to return the book
+        await axios.post(
+          `http://127.0.0.1:5000/return-book/${this.book_id}`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
+        );
 
-    //     this.bookIssued = requestedBooks.some(
-    //       (book) => book.book_id === parseInt(this.book_id)
-    //     );
-    //     console.log("BOOK REQUESTED", this.bookIssued);
-    //   } catch (error) {
-    //     console.error("Error fetching user requested books:", error);
-    //   }
-    // },
+        // Update the UI to reflect that the book has been returned
+        this.bookExists = false; // Set bookExists to false after returning the book
+        alert("Book returned successfully");
+        console.log("Book returned successfully");
+        this.$router.push(`/user`);
+      } catch (error) {
+        console.error("Error returning book:", error);
+      }
+    },
   },
 };
 </script>

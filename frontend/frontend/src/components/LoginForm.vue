@@ -65,7 +65,13 @@ export default {
             localStorage.setItem("role", response.data.role);
             console.log("token set in local storage");
             // Redirect to the dashboard after successful login
-            this.$router.push("/user-info");
+            if (response.data.role == "user") {
+              this.$router.push("/user");
+            } else if (response.data.role == "librarian") {
+              this.$router.push("/librarian");
+            } else {
+              this.$router.push("/");
+            }
           } else {
             // Handle case where access token is missing or invalid
             console.error("Access token not found in response data");

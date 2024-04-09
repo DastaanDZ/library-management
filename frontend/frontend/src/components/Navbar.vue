@@ -30,15 +30,15 @@
         <!-- Left links -->
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <router-link to="/dashboard" class="nav-link"
-              >Dashboard</router-link
+            <router-link to="/books" class="nav-link">Books</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link to="/requested" class="nav-link"
+              >Requested</router-link
             >
           </li>
           <li class="nav-item">
-            <router-link to="/team" class="nav-link">Team</router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/projects" class="nav-link">Projects</router-link>
+            <router-link to="/issued" class="nav-link">Issued</router-link>
           </li>
         </ul>
         <!-- Left links -->

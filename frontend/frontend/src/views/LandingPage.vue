@@ -11,14 +11,13 @@
 </template>
 
 <script>
-import Navbar from "./Navbar.vue";
-import NewArrival from "./NewArrival.vue";
-import BookIssued from "./BookIssued.vue";
-import BookRequested from "./BookRequested.vue";
-import BookReturned from "./BookReturned.vue";
-import BooksAvailable from "./BooksAvailable.vue";
-import UserDetail from "./UserDetail.vue";
-
+import BookIssued from "@/components/BookIssued.vue";
+import BookRequested from "@/components/BookRequested.vue";
+import BookReturned from "@/components/BookReturned.vue";
+import BooksAvailable from "@/components/BooksAvailable.vue";
+import Navbar from "@/components/Navbar.vue";
+import NewArrival from "@/components/NewArrival.vue";
+import UserDetail from "@/components/UserDetail.vue";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
@@ -46,6 +45,16 @@ export default {
     };
   },
   mounted() {
+    const userRole = localStorage.getItem("role");
+
+    // Check if user role matches the required role
+    if (userRole !== this.roleRequired) {
+      // Redirect to login page
+      this.$router.push("/login");
+      return;
+    }
+
+    // Fetch user information if the role matches
     this.fetchUserInfo();
   },
   methods: {

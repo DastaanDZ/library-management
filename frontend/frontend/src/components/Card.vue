@@ -1,5 +1,5 @@
 <template>
-  <div class="card">
+  <div class="card d-flex flex-wrap">
     <img src="./book.jpg" class="card-img-top" alt="Book Cover" />
     <div class="card-body">
       <h5 class="card-title">{{ book.name }}</h5>
@@ -7,7 +7,7 @@
     </div>
     <router-link
       :to="{
-        name: 'CardDetails',
+        name: userRole === 'librarian' ? 'LibCardDetails' : 'CardDetails',
         params: { book_id: book.book_id ? book.book_id : book.id },
       }"
     >
@@ -24,6 +24,11 @@ export default {
       type: Object,
       required: true,
     },
+  },
+  data() {
+    return {
+      userRole: localStorage.getItem("role"), // Get the user's role from localStorage
+    };
   },
 };
 </script>

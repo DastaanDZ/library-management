@@ -5,7 +5,7 @@ from app.config import LocalDevelopmentConfig
 from app.database import db, jwt
 from app.controllers import app as routes_app
 from flask_cors import CORS
-from mail import send_email
+# from mail import send_email
 
 def create_app():
     app = Flask(__name__, template_folder="templates")

@@ -2,28 +2,30 @@
   <div class="parent-div">
     <Navbar />
     <div class="main-page">
+      <h1>LIBRARIAN</h1>
       <UserDetail :username="username" />
+      <LibrarianAction />
       <BooksAvailable :books="books" :heading="booksAvailable" />
-      <BooksAvailable :books="requestedBooks" :heading="booksRequested" />
-      <BooksAvailable :books="issuedBooks" :heading="booksIssued" />
+      <BooksAvailable :books="issuedBooks" :heading="booksToBeAssigned" />
     </div>
   </div>
 </template>
 
 <script>
-import Navbar from "./Navbar.vue";
-import NewArrival from "./NewArrival.vue";
-import BookIssued from "./BookIssued.vue";
-import BookRequested from "./BookRequested.vue";
-import BookReturned from "./BookReturned.vue";
-import BooksAvailable from "./BooksAvailable.vue";
-import UserDetail from "./UserDetail.vue";
+import BookIssued from "@/components/BookIssued.vue";
+import BookRequested from "@/components/BookRequested.vue";
+import BookReturned from "@/components/BookReturned.vue";
+import BooksAvailable from "@/components/BooksAvailable.vue";
+import Navbar from "@/components/Navbar.vue";
+import NewArrival from "@/components/NewArrival.vue";
+import UserDetail from "@/components/UserDetail.vue";
+import LibrarianAction from "@/components/LibrarianAction.vue";
 
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 export default {
-  name: "LandingPage",
+  name: "Librarian",
   props: ["roleRequired"],
   components: {
     Navbar,
@@ -33,19 +35,29 @@ export default {
     BookReturned,
     BooksAvailable,
     NewArrival,
+    LibrarianAction,
   },
   data() {
     return {
       username: "", // Initialize username as an empty string
       books: [],
-      requestedBooks: [],
+      assignedBooks: [],
       issuedBooks: [],
       booksAvailable: "Books Available",
-      booksRequested: "Books Requested",
-      booksIssued: "Books Issued",
+      booksToBeAssigned: "Books To be Assigned",
     };
   },
   mounted() {
+    const userRole = localStorage.getItem("role");
+
+    // Check if user role matches the required role
+    if (userRole !== this.roleRequired) {
+      // Redirect to login page
+      this.$router.push("/login");
+      return;
+    }
+
+    // Fetch user information if the role matches
     this.fetchUserInfo();
   },
   methods: {
@@ -88,29 +100,17 @@ export default {
       }
 
       try {
-        const requestedBooksResponse = await axios.get(
-          `http://127.0.0.1:5000/requested-books/${user_id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-            },
-          }
-        );
-        this.requestedBooks = requestedBooksResponse.data;
-      } catch (error) {
-        console.error("Error fetching requested books:", error);
-      }
-
-      try {
+        // Fetch unique books requested
         const issuedBooksResponse = await axios.get(
-          `http://127.0.0.1:5000/issued-books/${user_id}`,
+          `http://127.0.0.1:5000/unique-books-requested`,
           {
             headers: {
               Authorization: `Bearer ${accessToken}`,
             },
           }
         );
-        this.issuedBooks = issuedBooksResponse.data;
+        this.issuedBooks = issuedBooksResponse.data.unique_books;
+        console.log(this.issuedBooks);
       } catch (error) {
         console.error("Error fetching issued books:", error);
       }

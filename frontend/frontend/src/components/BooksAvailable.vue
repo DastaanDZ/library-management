@@ -1,7 +1,7 @@
 <template>
   <div class="main-div">
     <h2>{{ heading }}</h2>
-    <div class="cards">
+    <div class="cards d-flex flex-wrap">
       <Card
         v-for="(book, index) in books.slice(0, 5)"
         :key="index"
@@ -10,13 +10,11 @@
       <p v-if="books.length === 0">You Dont Have Any {{ heading }}</p>
     </div>
     <h6>
-      <a
-        ><router-link
-          :to="{ name: 'ViewAll', props: { books: books, heading: heading } }"
-        >
+      <h6>
+        <router-link to="/books">
           <button class="btn btn-primary" type="submit">View All</button>
-        </router-link></a
-      >
+        </router-link>
+      </h6>
     </h6>
   </div>
 </template>
