@@ -2,7 +2,7 @@
   <div class="parent-div">
     <Navbar />
     <div class="main-page">
-      <UserDetail :username="username" />
+      <UserDetail :username="username" :userId="user_id" />
       <BooksAvailable :books="books" :heading="booksAvailable" />
       <BooksAvailable :books="requestedBooks" :heading="booksRequested" />
       <BooksAvailable :books="issuedBooks" :heading="booksIssued" />
@@ -11,12 +11,8 @@
 </template>
 
 <script>
-import BookIssued from "@/components/BookIssued.vue";
-import BookRequested from "@/components/BookRequested.vue";
-import BookReturned from "@/components/BookReturned.vue";
 import BooksAvailable from "@/components/BooksAvailable.vue";
 import Navbar from "@/components/Navbar.vue";
-import NewArrival from "@/components/NewArrival.vue";
 import UserDetail from "@/components/UserDetail.vue";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
@@ -27,15 +23,12 @@ export default {
   components: {
     Navbar,
     UserDetail,
-    BookIssued,
-    BookRequested,
-    BookReturned,
     BooksAvailable,
-    NewArrival,
   },
   data() {
     return {
       username: "", // Initialize username as an empty string
+      user_id: null, // Initialize user_id as null
       books: [],
       requestedBooks: [],
       issuedBooks: [],
@@ -45,31 +38,28 @@ export default {
     };
   },
   mounted() {
-    const userRole = localStorage.getItem("role");
+    const accessToken = localStorage.getItem("accessToken");
 
-    // Check if user role matches the required role
-    if (userRole !== this.roleRequired) {
-      // Redirect to login page
-      this.$router.push("/login");
+    if (!accessToken) {
+      console.error("Access token not found in localStorage");
+      // Redirect to login page or handle the absence of token
       return;
     }
 
+    const decodedToken = jwtDecode(accessToken);
+    const user_id = decodedToken.sub;
+
+    // Set user_id to the component data
+    this.user_id = user_id;
+
     // Fetch user information if the role matches
-    this.fetchUserInfo();
+    this.fetchUserInfo(user_id);
   },
   methods: {
-    async fetchUserInfo() {
-      const accessToken = localStorage.getItem("accessToken");
-
-      if (!accessToken) {
-        console.error("Access token not found in localStorage");
-        return;
-      }
-
-      const decodedToken = jwtDecode(accessToken);
-      const user_id = decodedToken.sub;
-
+    async fetchUserInfo(user_id) {
       try {
+        const accessToken = localStorage.getItem("accessToken");
+
         const userInfoResponse = await axios.get(
           `http://127.0.0.1:5000/user-info/${user_id}`,
           {
@@ -83,20 +73,29 @@ export default {
         console.error("Error fetching user info:", error);
       }
 
+      // Fetch other data using user_id
+      this.fetchBooks(user_id);
+      this.fetchRequestedBooks(user_id);
+      this.fetchIssuedBooks(user_id);
+    },
+    async fetchBooks(user_id) {
       try {
-        // Fetch books
+        const accessToken = localStorage.getItem("accessToken");
+
         const booksResponse = await axios.get(`http://127.0.0.1:5000/books`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
         this.books = booksResponse.data; // Assign directly to this.books
-        console.log(this.books);
       } catch (error) {
         console.error("Error fetching books:", error);
       }
-
+    },
+    async fetchRequestedBooks(user_id) {
       try {
+        const accessToken = localStorage.getItem("accessToken");
+
         const requestedBooksResponse = await axios.get(
           `http://127.0.0.1:5000/requested-books/${user_id}`,
           {
@@ -109,8 +108,11 @@ export default {
       } catch (error) {
         console.error("Error fetching requested books:", error);
       }
-
+    },
+    async fetchIssuedBooks(user_id) {
       try {
+        const accessToken = localStorage.getItem("accessToken");
+
         const issuedBooksResponse = await axios.get(
           `http://127.0.0.1:5000/issued-books/${user_id}`,
           {

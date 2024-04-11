@@ -102,6 +102,7 @@ export default {
         .post("http://127.0.0.1:5000/register", this.userData)
         .then((response) => {
           console.log(response.data.message); // Log the response message
+          this.$router.push("/login");
           // Optionally, you can redirect the user or show a success message here
         })
         .catch((error) => {

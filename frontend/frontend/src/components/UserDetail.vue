@@ -6,7 +6,10 @@
       </div>
       <h3>Hello, {{ username }}</h3>
     </div>
-    <router-link to="/user-info" class="btn btn-primary">
+    <router-link
+      :to="{ name: 'UserInfo', params: { userId: userId } }"
+      class="btn btn-primary"
+    >
       Edit Personal<br />Details
     </router-link>
   </div>
@@ -17,6 +20,10 @@ export default {
   name: "UserDetail",
   props: {
     username: {
+      type: String,
+      required: true,
+    },
+    userId: {
       type: String,
       required: true,
     },

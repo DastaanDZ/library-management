@@ -70,7 +70,7 @@ const routes = [
     component: UserInfo,
   },
   {
-    path: "/user-edit",
+    path: "/user-edit/:user_id",
     name: "UserEditForm",
     component: UserEditForm,
   },

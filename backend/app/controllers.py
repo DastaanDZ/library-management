@@ -6,7 +6,8 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from app.models import User, Book, Request, Feedback, Section, IssuedBook
 from app.database import db
 from datetime import datetime, timedelta
-from tasks import send_email
+# from tasks import send_email
+# from mail import send_email
 
 app = Blueprint('controllers', __name__)
 
@@ -14,10 +15,39 @@ app = Blueprint('controllers', __name__)
 def greeting():
     return("Hello, world")
 
-@app.route('/email', methods=['GET'])
-def mail():
-    send_email.delay("21f2001529@ds.study.iitm.ac.in","nigaver985@ikumaru.com","Test subject","This is a test message")
-    return("EMAIL sent")
+# @app.route('/email', methods=['GET'])
+# def mail():
+#     send_email.delay("21f2001529@ds.study.iitm.ac.in","nigaver985@ikumaru.com","Test subject","This is a test message")
+#     # send_email("21f2001529@ds.study.iitm.ac.in","dagocoj482@eryod.com","Test subject","This is a test message")
+#     return("EMAIL sent")
+
+@app.route('/inactive-users', methods=['GET'])
+def get_inactive_users_endpoint():
+    # Define the timeframe for considering a user as inactive (e.g., 24 hours)
+    inactive_threshold = datetime.now() - timedelta(seconds=5)
+
+    # Query the database to retrieve users who haven't visited the app within the specified timeframe
+    inactive_users = User.query.filter(User.last_login < inactive_threshold).all()
+
+    # Serialize the inactive users into a JSON response
+    serialized_users = [{'id': user.id, 'username': user.username, 'email': user.email} for user in inactive_users]
+    
+    return jsonify({'inactive_users': serialized_users}), 200
+
+@app.route('/check-inactive', methods=['GET'])
+def checkInactive():
+    # Define the timeframe for considering a user as inactive (e.g., 5 seconds)
+    inactive_threshold = datetime.now() - timedelta(seconds=5)
+
+    # Query the database to retrieve users who haven't visited the app within the specified timeframe
+    inactive_users = User.query.filter(User.last_login < inactive_threshold).all()
+
+    print("INACTIVE USERS:")
+    for user in inactive_users:
+        print("SENDING REMINDER TO:", user.username)
+
+    return("SENDING DONE")
+    
 
 # User Registration
 @app.route('/register', methods=['POST'])
@@ -29,7 +59,7 @@ def register():
     return jsonify({'message': 'User created successfully!'}), 201
 
 # Endpoint to get user info
-@jwt_required()
+# @jwt_required()
 @app.route('/user-info/<int:user_id>', methods=['GET'])
 def user_info(user_id):
 
@@ -584,3 +614,54 @@ def add_section():
 
     # Return a success message
     return jsonify({'message': 'Section added successfully', 'section_id': new_section.id}), 201
+    
+# Endpoint to fetch the number of books issued to a user
+@app.route('/books-issued/<int:user_id>', methods=['GET'])
+def books_issued(user_id):
+    issued_books_count = IssuedBook.query.filter_by(user_id=user_id).count()
+    return jsonify({'count': issued_books_count}), 200
+
+# Endpoint to fetch the number of book requests made by a user
+@app.route('/books-requested/<int:user_id>', methods=['GET'])
+def books_requested(user_id):
+    requested_books_count = Request.query.filter_by(user_id=user_id).count()
+    return jsonify({'count': requested_books_count}), 200
+
+# Endpoint to fetch issued books and feedbacks filtered by start and end dates
+@app.route('/reports/<int:user_id>', methods=['GET'])
+def fetch_reports(user_id):
+    start_date_str = request.args.get('start_date')
+    end_date_str = request.args.get('end_date')
+
+    if not start_date_str or not end_date_str:
+        return jsonify({'message': 'Both start_date and end_date are required as query parameters.'}), 400
+
+    try:
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
+    except ValueError:
+        return jsonify({'message': 'Invalid date format. Please use YYYY-MM-DD format.'}), 400
+
+    issued_books = IssuedBook.query.filter(IssuedBook.issue_date >= start_date, IssuedBook.issue_date < end_date, IssuedBook.user_id == user_id).all()
+    feedbacks = Feedback.query.filter(Feedback.created_at >= start_date, Feedback.created_at < end_date,Feedback.user_id == user_id).all()
+
+    serialized_issued_books = [book.serialize() for book in issued_books]
+    serialized_feedbacks = [feedback.serialize() for feedback in feedbacks]
+
+    return jsonify({'issued_books': serialized_issued_books, 'feedbacks': serialized_feedbacks}), 200
+
+# Endpoint to fetch all users
+@app.route('/all-users', methods=['GET'])
+def get_all_users():
+    users = User.query.all()  # Assuming User is your SQLAlchemy model for users
+    user_list = []
+    for user in users:
+        user_info = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role
+            # Add more fields as needed
+        }
+        user_list.append(user_info)
+    return jsonify(users=user_list), 200

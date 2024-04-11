@@ -8,6 +8,7 @@ class User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
     role = db.Column(db.String(20), nullable=False)  # 'user' or 'librarian'
+    last_login = db.Column(db.DateTime)
 
     def __repr__(self):
         return f"<User {self.username}>"
@@ -15,6 +16,7 @@ class User(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+
 
 class Book(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -46,6 +48,7 @@ class Feedback(db.Model):
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
     book_id = db.Column(db.Integer(), db.ForeignKey('book.id'))
     feedback_text = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
 
 class Section(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
