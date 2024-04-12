@@ -24,7 +24,7 @@ def setup_periodic_tasks(sender, **kwargs):
         send_reminders.s()
     )
     sender.add_periodic_task(
-        crontab(hour=11, minute=18),  # Run at the end of each month
+        crontab(day_of_month=1, hour=0, minute=0),  # Run on the first day of each month
         generate_and_send_monthly_report.s()
     )
 

@@ -62,6 +62,8 @@
           placeholder="Book Price"
         />
       </div>
+      <UploadWidget @incomingUrl="receiveUrl" />
+      <img width="400" id="uploadedimage" src="" />
       <div class="form-group text-start mb-1">
         <button type="submit" class="btn btn-block create-account">
           Add Book
@@ -73,9 +75,13 @@
 
 <script>
 import axios from "axios";
+import UploadWidget from "@/components/UploadWidget.vue";
 
 export default {
   name: "AddBookForm",
+  components: {
+    UploadWidget,
+  },
   data() {
     return {
       bookData: {
@@ -85,6 +91,7 @@ export default {
         count: 0,
         available: false, // Initialize available as false
         price: 0,
+        selectedFile: null,
       },
     };
   },
@@ -99,7 +106,7 @@ export default {
     async addBook() {
       try {
         const accessToken = localStorage.getItem("accessToken");
-
+        console.log(this.bookData);
         // Send a POST request to the server to add the book
         await axios.post("http://127.0.0.1:5000/add-book", this.bookData, {
           headers: {
@@ -126,6 +133,15 @@ export default {
         available: false,
         price: 0,
       };
+    },
+    onFileSelected(event) {
+      this.selectedFile = event.target.files[0];
+    },
+    receiveUrl(url) {
+      // This method will be called when the child component emits the "incomingUrl" event
+      console.log("Received URL", url);
+      // Do whatever you need with the URL, such as assigning it to a property in your data object
+      this.bookData.selectedFile = url;
     },
   },
 };

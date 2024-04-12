@@ -1,6 +1,5 @@
 <template>
   <div class="parent-div">
-    <Navbar />
     <div class="main-page">
       <UserDetail :username="username" />
       <BooksAvailable :books="books" :heading="booksAvailable" />
@@ -11,7 +10,6 @@
 </template>
 
 <script>
-import Navbar from "./Navbar.vue";
 import NewArrival from "./NewArrival.vue";
 import BookIssued from "./BookIssued.vue";
 import BookRequested from "./BookRequested.vue";
@@ -26,7 +24,6 @@ export default {
   name: "LandingPage",
   props: ["roleRequired"],
   components: {
-    Navbar,
     UserDetail,
     BookIssued,
     BookRequested,
@@ -72,6 +69,10 @@ export default {
         this.username = userInfoResponse.data.username;
       } catch (error) {
         console.error("Error fetching user info:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
 
       try {
@@ -85,6 +86,10 @@ export default {
         console.log(this.books);
       } catch (error) {
         console.error("Error fetching books:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
 
       try {
@@ -99,6 +104,10 @@ export default {
         this.requestedBooks = requestedBooksResponse.data;
       } catch (error) {
         console.error("Error fetching requested books:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
 
       try {
@@ -113,6 +122,10 @@ export default {
         this.issuedBooks = issuedBooksResponse.data;
       } catch (error) {
         console.error("Error fetching issued books:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
     },
   },

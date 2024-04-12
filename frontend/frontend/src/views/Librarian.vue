@@ -1,6 +1,5 @@
 <template>
   <div class="parent-div">
-    <Navbar />
     <div class="main-page">
       <h1>LIBRARIAN</h1>
       <UserDetail :username="username" />
@@ -16,7 +15,6 @@ import BookIssued from "@/components/BookIssued.vue";
 import BookRequested from "@/components/BookRequested.vue";
 import BookReturned from "@/components/BookReturned.vue";
 import BooksAvailable from "@/components/BooksAvailable.vue";
-import Navbar from "@/components/Navbar.vue";
 import NewArrival from "@/components/NewArrival.vue";
 import UserDetail from "@/components/UserDetail.vue";
 import LibrarianAction from "@/components/LibrarianAction.vue";
@@ -28,7 +26,6 @@ export default {
   name: "Librarian",
   props: ["roleRequired"],
   components: {
-    Navbar,
     UserDetail,
     BookIssued,
     BookRequested,

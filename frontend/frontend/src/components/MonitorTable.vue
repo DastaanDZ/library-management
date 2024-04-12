@@ -75,6 +75,10 @@ export default {
         console.log(this.monitoredBooks);
       } catch (error) {
         console.error("Error fetching monitored books:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
     },
     async revokeAccess(bookId, userId) {
@@ -99,6 +103,10 @@ export default {
         // Optionally, you can update the UI or perform any other actions after revoking access
       } catch (error) {
         console.error("Error revoking access:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
         // Handle errors here
       }
     },

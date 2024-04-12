@@ -83,6 +83,10 @@ export default {
         this.userData = response.data;
       } catch (error) {
         console.error("Error fetching user info:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
     },
     async saveChanges() {

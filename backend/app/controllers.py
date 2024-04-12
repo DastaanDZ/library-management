@@ -53,7 +53,7 @@ def checkInactive():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    hashed_password = generate_password_hash(data['password'], method='sha256')
+    hashed_password = generate_password_hash(data['password'])
     new_user = User(username=data['username'], email=data['email'], password=hashed_password, role=data['role'])
     new_user.save()
     return jsonify({'message': 'User created successfully!'}), 201
@@ -96,7 +96,7 @@ def edit_user(user_id):
             user.email = data['email']
         if 'password' in data:
             # Hash the new password before updating
-            hashed_password = generate_password_hash(data['password'], method='sha256')
+            hashed_password = generate_password_hash(data['password'])
             user.password = hashed_password
         if 'role' in data:
             user.role = data['role']

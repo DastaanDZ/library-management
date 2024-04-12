@@ -138,6 +138,10 @@ export default {
         console.log(this.book);
       } catch (error) {
         console.error("Error fetching book details:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
     },
     async checkIssuedStatus() {
@@ -154,6 +158,10 @@ export default {
         console.log("ISSUED STATUS", this.bookIssued);
       } catch (error) {
         console.error("Error fetching issued books:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
     },
     async requestBook() {
@@ -177,6 +185,10 @@ export default {
         console.log("Book requested successfully");
       } catch (error) {
         console.error("Error requesting book:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
     },
     checkBookAvailability() {
@@ -208,6 +220,10 @@ export default {
         this.$router.push(`/user`);
       } catch (error) {
         console.error("Error returning book:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
     },
   },

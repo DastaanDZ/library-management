@@ -1,6 +1,7 @@
 <template>
   <div class="main-div">
     <h2>{{ heading }}</h2>
+    <SearchBar :sections="sections" @filteredData="receiveFilteredData" />
     <div class="cards d-flex flex-wrap">
       <Card v-for="(book, index) in books" :key="index" :book="book" />
       <p v-if="books.length === 0">You Dont Have Any {{ heading }}</p>
@@ -12,18 +13,21 @@
 import Card from "@/components/Card.vue";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import SearchBar from "@/components/SearchBar.vue";
 
 export default {
   name: "Books",
   props: ["heading"],
-  components: { Card },
+  components: { Card, SearchBar },
   data() {
     return {
       books: [],
+      sections: [],
     };
   },
   mounted() {
     this.fetchBooks();
+    this.fetchSections();
   },
 
   methods: {
@@ -51,6 +55,26 @@ export default {
         console.error("Error fetching books:", error);
       }
     },
+
+    async fetchSections() {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+
+        const response = await axios.get("http://127.0.0.1:5000/sections", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        this.sections = response.data.sections;
+      } catch (error) {
+        console.error("Error fetching sections:", error);
+      }
+    },
+    receiveFilteredData(filteredData) {
+      this.books = filteredData;
+      console.log("Received Data");
+      console.log(this.books);
+    },
   },
 };
 </script>
@@ -64,7 +88,7 @@ export default {
 }
 .main-div {
   display: flex;
-  align-items: start;
+  /* align-items: start; */
   flex-direction: column;
   padding: 2rem;
   background-color: white;

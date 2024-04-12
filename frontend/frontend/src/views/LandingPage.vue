@@ -1,6 +1,5 @@
 <template>
   <div class="parent-div">
-    <Navbar />
     <div class="main-page">
       <UserDetail :username="username" :userId="user_id" />
       <BooksAvailable :books="books" :heading="booksAvailable" />
@@ -12,7 +11,6 @@
 
 <script>
 import BooksAvailable from "@/components/BooksAvailable.vue";
-import Navbar from "@/components/Navbar.vue";
 import UserDetail from "@/components/UserDetail.vue";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
@@ -21,7 +19,6 @@ export default {
   name: "LandingPage",
   props: ["roleRequired"],
   components: {
-    Navbar,
     UserDetail,
     BooksAvailable,
   },

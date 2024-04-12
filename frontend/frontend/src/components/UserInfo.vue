@@ -88,6 +88,10 @@ export default {
         this.userData = response.data;
       } catch (error) {
         console.error("Error fetching user info:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
     },
     async fetchBooksIssued() {
@@ -98,6 +102,10 @@ export default {
         this.booksIssued = response.data.count;
       } catch (error) {
         console.error("Error fetching books issued:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
     },
     async fetchBooksRequested() {
@@ -108,6 +116,10 @@ export default {
         this.booksRequested = response.data.count;
       } catch (error) {
         console.error("Error fetching books requested:", error);
+        if (error.response && error.response.status === 404) {
+          // Redirect to login page if unauthorized (status code 404)
+          this.$router.push("/login");
+        }
       }
     },
   },

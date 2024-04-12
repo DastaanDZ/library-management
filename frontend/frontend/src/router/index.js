@@ -8,7 +8,6 @@ import UserInfo from "@/components/UserInfo.vue";
 import MonitorTable from "@/components/MonitorTable.vue";
 import CardDetails from "@/components/CardDetails.vue";
 import UserDetail from "@/components/UserDetail.vue";
-import Search from "@/components/Search.vue";
 
 import Books from "@/views/Books.vue";
 import Issued from "@/views/Issued.vue";
@@ -21,10 +20,16 @@ import AddBook from "@/views/AddBook.vue";
 import AssignSection from "@/views/AssignSection.vue";
 import AddSection from "@/views/AddSection.vue";
 import EditBook from "@/views/EditBook.vue";
+import Home from "@/views/Home.vue";
 
 Vue.use(VueRouter);
 
 const routes = [
+  {
+    path: "/",
+    name: "Home",
+    component: Home,
+  },
   {
     path: "/user",
     name: "LandingPage",
@@ -88,11 +93,6 @@ const routes = [
     path: "/monitor",
     name: "MonitorTable",
     component: MonitorTable,
-  },
-  {
-    path: "/search",
-    name: "Search",
-    component: Search,
   },
   {
     path: "/books",

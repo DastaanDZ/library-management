@@ -1,5 +1,6 @@
 <template>
   <div class="parent">
+    <SearchBar />
     <nav class="navbar bg-body-tertiary">
       <div class="container-fluid">
         <form class="d-flex" role="search">
@@ -24,10 +25,19 @@
 
 <script>
 import Card from "./Card.vue";
+import SearchBar from "./SearchBar.vue";
 
 export default {
   name: "ViewAll",
-  components: { Card },
+  data() {
+    return {
+      sections: [],
+    };
+  },
+  components: {
+    Card,
+    SearchBar,
+  },
   props: {
     books: {
       type: Array,
@@ -36,6 +46,25 @@ export default {
     heading: {
       type: String,
       required: true,
+    },
+  },
+  created() {
+    this.fetchSections();
+  },
+  methods: {
+    async fetchSections() {
+      try {
+        const accessToken = localStorage.getItem("accessToken");
+
+        const response = await axios.get("http://127.0.0.1:5000/sections", {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        this.sections = response.data.sections;
+      } catch (error) {
+        console.error("Error fetching sections:", error);
+      }
     },
   },
 };

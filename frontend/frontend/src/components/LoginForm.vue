@@ -26,6 +26,15 @@
         <button type="submit" class="btn btn-block create-account">
           Login
         </button>
+        <router-link :to="{ path: '/register' }">
+          <button
+            type="button"
+            class="btn btn-block create-account"
+            style="margin-left: 1rem"
+          >
+            Register
+          </button>
+        </router-link>
       </div>
     </form>
   </div>
@@ -80,7 +89,12 @@ export default {
         })
         .catch((error) => {
           console.error("Error:", error);
-          alert("Invalid username or password. Please try again.");
+          if (error.response && error.response.status === 404) {
+            // Redirect to login page if unauthorized (status code 404)
+            this.$router.push("/login");
+          } else {
+            alert("Invalid username or password. Please try again.");
+          }
         });
     },
   },
@@ -125,11 +139,10 @@ body {
   padding: 10px 20px;
 }
 
-.registration-form .create-account {
+.registration-form .create-account .register-account {
   border-radius: 30px;
   padding: 10px 20px;
   font-size: 18px;
-  font-weight: bold;
   background-color: #5791ff;
   border: none;
   color: white;
