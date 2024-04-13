@@ -1,6 +1,6 @@
 <template>
   <div class="assign-section-page">
-    <h1>Assign Book to Section</h1>
+    <h1>{{ heading }}</h1>
     <form @submit.prevent="assignBook" class="d-flex mw-100">
       <div class="form-group text-start mb-1">
         <label for="book">Select Book:</label>
@@ -58,6 +58,9 @@ export default {
       type: Array,
       required: true,
     },
+    heading: {
+      type: String,
+    },
   },
   data() {
     return {
@@ -81,7 +84,6 @@ export default {
     },
     filterBooks() {
       try {
-        // Implement the logic to assign the selected book to the selected section
         console.log("Inside search");
         console.log(this.selectedBook);
         console.log("Sections");
@@ -96,13 +98,11 @@ export default {
 
         console.log("after filtering search");
         console.log(filteredBooks);
-        //   console.log(this.filteredSections);
 
         this.$emit("filteredData", filteredBooks);
       } catch (error) {
         console.error("Error filtering books:", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }

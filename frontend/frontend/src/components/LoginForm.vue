@@ -52,28 +52,23 @@ export default {
   },
   methods: {
     loginUser() {
-      // Prepare the form data object
       const formData = {
         username: this.username,
         password: this.password,
       };
 
-      // Make an HTTP POST request to the backend route
       const path = "http://127.0.0.1:5000/login";
       axios
         .post(path, formData)
         .then((response) => {
-          // Check if access token is present in the response data
           if (
             response.data &&
             response.data.access_token &&
             response.data.role
           ) {
-            // Store the access token in localStorage
             localStorage.setItem("accessToken", response.data.access_token);
             localStorage.setItem("role", response.data.role);
             console.log("token set in local storage");
-            // Redirect to the dashboard after successful login
             if (response.data.role == "user") {
               this.$router.push("/user");
             } else if (response.data.role == "librarian") {
@@ -82,15 +77,13 @@ export default {
               this.$router.push("/");
             }
           } else {
-            // Handle case where access token is missing or invalid
             console.error("Access token not found in response data");
             alert("Invalid response from the server. Please try again.");
           }
         })
         .catch((error) => {
           console.error("Error:", error);
-          if (error.response && error.response.status === 404) {
-            // Redirect to login page if unauthorized (status code 404)
+          if (error.response && error.response.status === 401) {
             this.$router.push("/login");
           } else {
             alert("Invalid username or password. Please try again.");
@@ -102,10 +95,6 @@ export default {
 </script>
 
 <style>
-body {
-  /* background-color: #dee9ff; */
-}
-
 .registration-form {
   padding: 50px 0;
 }

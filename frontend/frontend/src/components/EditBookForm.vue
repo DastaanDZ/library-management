@@ -96,31 +96,24 @@ export default {
   methods: {
     async saveChanges() {
       try {
-        // Check if user role is librarian
         if (this.userRole !== "librarian") {
           alert("Only librarians can edit books");
           return;
         }
-
-        // Get access token from localStorage
         const accessToken = localStorage.getItem("accessToken");
 
-        // Proceed with updating book if user is a librarian
         const response = await axios.put(
-          //   `http://127.0.0.1:5000/edit-book/${this.bookId}`,
           `http://127.0.0.1:5000/edit-book/2`,
           this.bookData,
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`, // Include access token in the request headers
+              Authorization: `Bearer ${accessToken}`,
             },
           }
         );
         console.log(response.data);
-        // Optionally, you can show a success message or redirect the user after successful update
       } catch (error) {
         console.error("Error updating book:", error);
-        // Handle error - e.g., show an error message to the user
       }
     },
   },
@@ -129,19 +122,15 @@ export default {
       const role = localStorage.getItem("role");
 
       if (!role) {
-        return null; // Or any default value as per your application logic
+        return null;
       }
-      return role; // Assuming 'role' is the key containing the user's role in the token payload
+      return role;
     },
   },
 };
 </script>
 
 <style>
-body {
-  /* background-color: #dee9ff; */
-}
-
 .registration-form {
   padding: 50px 0;
 }

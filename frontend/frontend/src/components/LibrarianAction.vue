@@ -1,6 +1,5 @@
 <template>
   <div class="button-group-page">
-    <!-- Added button group -->
     <div class="btn-group" role="group" aria-label="Basic example">
       <button
         type="button"

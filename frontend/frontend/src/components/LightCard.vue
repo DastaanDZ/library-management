@@ -18,7 +18,3 @@ export default {
   name: "LightCard",
 };
 </script>
-
-<style>
-/* Add your custom styles here */
-</style>

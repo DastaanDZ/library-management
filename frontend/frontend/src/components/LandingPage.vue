@@ -33,7 +33,7 @@ export default {
   },
   data() {
     return {
-      username: "", // Initialize username as an empty string
+      username: "",
       books: [],
       requestedBooks: [],
       issuedBooks: [],
@@ -69,8 +69,7 @@ export default {
         this.username = userInfoResponse.data.username;
       } catch (error) {
         console.error("Error fetching user info:", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }
@@ -82,12 +81,11 @@ export default {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        this.books = booksResponse.data; // Assign directly to this.books
+        this.books = booksResponse.data;
         console.log(this.books);
       } catch (error) {
         console.error("Error fetching books:", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }
@@ -104,8 +102,7 @@ export default {
         this.requestedBooks = requestedBooksResponse.data;
       } catch (error) {
         console.error("Error fetching requested books:", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }
@@ -122,8 +119,7 @@ export default {
         this.issuedBooks = issuedBooksResponse.data;
       } catch (error) {
         console.error("Error fetching issued books:", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }

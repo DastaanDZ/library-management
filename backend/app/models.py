@@ -26,6 +26,7 @@ class Book(db.Model):
     count = db.Column(db.Integer())
     available = db.Column(db.Boolean())
     price = db.Column(db.Integer(), nullable=False)
+    link = db.Column(db.String(), nullable=False)
     
     # Define the foreign key to establish the relationship with the Section model
     section_id = db.Column(db.Integer(), db.ForeignKey('section.id'))
@@ -38,7 +39,8 @@ class Book(db.Model):
             'author': self.author,
             'count': self.count,
             'available': self.available,
-            'price': self.price
+            'price': self.price,
+            'link': self.link,
             # Add more attributes as needed
         }
 

@@ -24,8 +24,8 @@ export default {
   },
   data() {
     return {
-      username: "", // Initialize username as an empty string
-      user_id: null, // Initialize user_id as null
+      username: "",
+      user_id: null,
       books: [],
       requestedBooks: [],
       issuedBooks: [],
@@ -39,17 +39,14 @@ export default {
 
     if (!accessToken) {
       console.error("Access token not found in localStorage");
-      // Redirect to login page or handle the absence of token
       return;
     }
 
     const decodedToken = jwtDecode(accessToken);
     const user_id = decodedToken.sub;
 
-    // Set user_id to the component data
     this.user_id = user_id;
 
-    // Fetch user information if the role matches
     this.fetchUserInfo(user_id);
   },
   methods: {
@@ -70,7 +67,6 @@ export default {
         console.error("Error fetching user info:", error);
       }
 
-      // Fetch other data using user_id
       this.fetchBooks(user_id);
       this.fetchRequestedBooks(user_id);
       this.fetchIssuedBooks(user_id);
@@ -84,7 +80,7 @@ export default {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        this.books = booksResponse.data; // Assign directly to this.books
+        this.books = booksResponse.data;
       } catch (error) {
         console.error("Error fetching books:", error);
       }

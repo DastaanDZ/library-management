@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory, Blueprint, jsonify
 import pdfkit
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, unset_jwt_cookies
 from app.models import User, Book, Request, Feedback, Section, IssuedBook
 from app.database import db
 from datetime import datetime, timedelta
@@ -124,6 +124,18 @@ def login():
     print(access_token)
     return jsonify({'access_token': access_token, 'role': user.role}), 200
 
+# Logout route
+@app.route('/logout', methods=['POST'])
+@jwt_required()  # Requires a valid access token
+def logout():
+    # Get the current user's identity from the access token
+    current_user_id = get_jwt_identity()
+
+    # Unset JWT cookies to remove access token
+    resp = jsonify({'message': 'Logout successful'})
+    unset_jwt_cookies(resp)
+    
+    return resp, 200
 
 @app.route('/sections', methods=['GET'])
 @jwt_required()
@@ -173,6 +185,7 @@ def get_requested_books(user_id):
                 'book_id': request.book_id,
                 'name': book.name,
                 'author': book.author,
+                'link': book.link,
                 # Add more book details as needed
             }
             # Append theaw serialized requested book data to the list
@@ -202,6 +215,7 @@ def get_issued_books(user_id):
                 'author': book.author,
                 'issue_date': issued_book.issue_date.strftime('%Y-%m-%d %H:%M:%S'),
                 'return_date': issued_book.return_date.strftime('%Y-%m-%d %H:%M:%S') if issued_book.return_date else None,
+                'link': book.link,
                 # Add more book details as needed
             }
             # Append the serialized issued book data to the list
@@ -263,11 +277,11 @@ def add_book():
     count = data.get('count')
     available = data.get('available')
     price = data.get('price')
-
-    if not all([name, content, author, count, available, price]):
+    link = data.get('selectedFile')
+    if not all([name, content, author, count, available, price,link]):
         return jsonify({'message': 'Missing required data'}), 400
 
-    new_book = Book(name=name, content=content, author=author, count=count, available= available, price=price)
+    new_book = Book(name=name, content=content, author=author, count=count, available= available, price=price, link=link)
     # Add more attributes as needed
 
     db.session.add(new_book)
@@ -283,18 +297,24 @@ def issue_book(user_id):
     if librarian.role != 'librarian':
         return jsonify({'message': 'Only librarians can issue books'}), 403
     
+    print("ISSUING BOOK")
+    
     data = request.get_json()
-    book_ids = data.get('book_ids', [])
+    book_ids = data.get('book_id', [])
+
+    print("GOT BOOK", book_ids)
 
     for book_id in book_ids:
         book = Book.query.get(book_id)
         if book and book.available:
             issued_book = IssuedBook(user_id=user_id, book_id=book_id, librarian_id=1)
+            print("ISSUED BOOKS", issued_book)
             book.count -= 1
             if book.count == 0:
                 book.available = False
             db.session.add(issued_book)
             db.session.commit()
+            print("COMMITED")
         else:
             return jsonify({'message': 'Book not found or already issued'}), 404
     
@@ -552,6 +572,9 @@ def unique_books_requested():
                 'id': book.id,
                 'name': book.name,
                 'author': book.author,
+                'link': book.link,
+                'content': book.content,
+                'price': book.price,
                 # Add more book details as needed
             })
 

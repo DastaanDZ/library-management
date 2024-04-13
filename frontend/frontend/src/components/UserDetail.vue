@@ -2,7 +2,7 @@
   <div class="main">
     <div class="user-div">
       <div class="dp">
-        <img src="./book.jpg" alt="" />
+        <img src="cover.png" alt="" />
       </div>
       <h3>Hello, {{ username }}</h3>
     </div>
@@ -12,10 +12,13 @@
     >
       Edit Personal<br />Details
     </router-link>
+    <button @click="logoutUser" class="btn btn-danger">Logout</button>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "UserDetail",
   props: {
@@ -26,6 +29,28 @@ export default {
     userId: {
       type: String,
       required: true,
+    },
+  },
+  methods: {
+    logoutUser() {
+      const accessToken = localStorage.getItem("accessToken");
+
+      const path = "http://127.0.0.1:5000/logout";
+      axios
+        .post(path, null, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((response) => {
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("role");
+          console.log("Logout successful");
+          this.$router.push("/login");
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     },
   },
 };

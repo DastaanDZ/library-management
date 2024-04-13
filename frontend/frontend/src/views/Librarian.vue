@@ -2,7 +2,7 @@
   <div class="parent-div">
     <div class="main-page">
       <h1>LIBRARIAN</h1>
-      <UserDetail :username="username" />
+      <UserDetail :username="username" :userId="userId" />
       <LibrarianAction />
       <BooksAvailable :books="books" :heading="booksAvailable" />
       <BooksAvailable :books="issuedBooks" :heading="booksToBeAssigned" />
@@ -11,9 +11,6 @@
 </template>
 
 <script>
-import BookIssued from "@/components/BookIssued.vue";
-import BookRequested from "@/components/BookRequested.vue";
-import BookReturned from "@/components/BookReturned.vue";
 import BooksAvailable from "@/components/BooksAvailable.vue";
 import NewArrival from "@/components/NewArrival.vue";
 import UserDetail from "@/components/UserDetail.vue";
@@ -36,7 +33,8 @@ export default {
   },
   data() {
     return {
-      username: "", // Initialize username as an empty string
+      userId: "",
+      username: "",
       books: [],
       assignedBooks: [],
       issuedBooks: [],
@@ -47,14 +45,10 @@ export default {
   mounted() {
     const userRole = localStorage.getItem("role");
 
-    // Check if user role matches the required role
     if (userRole !== this.roleRequired) {
-      // Redirect to login page
       this.$router.push("/login");
       return;
     }
-
-    // Fetch user information if the role matches
     this.fetchUserInfo();
   },
   methods: {
@@ -68,6 +62,7 @@ export default {
 
       const decodedToken = jwtDecode(accessToken);
       const user_id = decodedToken.sub;
+      this.userId = user_id;
 
       try {
         const userInfoResponse = await axios.get(
@@ -80,24 +75,30 @@ export default {
         );
         this.username = userInfoResponse.data.username;
       } catch (error) {
-        console.error("Error fetching user info:", error);
+        if (error.response && error.response.status === 401) {
+          window.location.href = "/login";
+        } else {
+          console.error("Error fetching user info:", error);
+        }
       }
 
       try {
-        // Fetch books
         const booksResponse = await axios.get(`http://127.0.0.1:5000/books`, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        this.books = booksResponse.data; // Assign directly to this.books
+        this.books = booksResponse.data;
         console.log(this.books);
       } catch (error) {
-        console.error("Error fetching books:", error);
+        if (error.response && error.response.status === 401) {
+          window.location.href = "/login";
+        } else {
+          console.error("Error fetching books:", error);
+        }
       }
 
       try {
-        // Fetch unique books requested
         const issuedBooksResponse = await axios.get(
           `http://127.0.0.1:5000/unique-books-requested`,
           {
@@ -109,7 +110,11 @@ export default {
         this.issuedBooks = issuedBooksResponse.data.unique_books;
         console.log(this.issuedBooks);
       } catch (error) {
-        console.error("Error fetching issued books:", error);
+        if (error.response && error.response.status === 401) {
+          window.location.href = "/login";
+        } else {
+          console.error("Error fetching issued books:", error);
+        }
       }
     },
   },

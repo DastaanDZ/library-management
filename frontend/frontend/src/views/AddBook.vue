@@ -89,7 +89,7 @@ export default {
         content: "",
         author: "",
         count: 0,
-        available: false, // Initialize available as false
+        available: false,
         price: 0,
         selectedFile: null,
       },
@@ -98,7 +98,6 @@ export default {
   mounted() {
     const userRole = localStorage.getItem("role");
     if (userRole !== "librarian") {
-      // Redirect to the /librarian page
       this.$router.push("/librarian");
     }
   },
@@ -106,25 +105,33 @@ export default {
     async addBook() {
       try {
         const accessToken = localStorage.getItem("accessToken");
+        if (
+          !this.bookData.name ||
+          !this.bookData.content ||
+          !this.bookData.author ||
+          !this.bookData.count ||
+          !this.bookData.price ||
+          !this.bookData.selectedFile
+        ) {
+          return;
+        }
         console.log(this.bookData);
-        // Send a POST request to the server to add the book
         await axios.post("http://127.0.0.1:5000/add-book", this.bookData, {
           headers: {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-
-        // Reset the form data after successful submission
         this.resetFormData();
-
-        // Inform the user that the book has been added successfully
         alert("Book added successfully");
+        window.location.reload();
       } catch (error) {
         console.error("Error adding book:", error);
+        if (error.response && error.response.status === 401) {
+          window.location.href = "/login";
+        }
       }
     },
     resetFormData() {
-      // Reset the form data
       this.bookData = {
         name: "",
         content: "",
@@ -132,15 +139,14 @@ export default {
         count: 0,
         available: false,
         price: 0,
+        selectedFile: null,
       };
     },
     onFileSelected(event) {
       this.selectedFile = event.target.files[0];
     },
     receiveUrl(url) {
-      // This method will be called when the child component emits the "incomingUrl" event
       console.log("Received URL", url);
-      // Do whatever you need with the URL, such as assigning it to a property in your data object
       this.bookData.selectedFile = url;
     },
   },

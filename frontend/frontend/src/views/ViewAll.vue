@@ -1,9 +1,13 @@
 <template>
   <div class="main-div">
-    <h2>{{ heading }}</h2>
-    <SearchBar :sections="sections" @filteredData="receiveFilteredData" />
+    <h2>VIEW ALL</h2>
+    <SearchBar
+      :sections="sections"
+      @filteredData="receiveFilteredData"
+      :heading="source"
+    />
     <div class="cards d-flex flex-wrap">
-      <Card v-for="(book, index) in books" :key="index" :book="book" />
+      <Card v-for="(book, index) in content" :key="index" :book="book" />
       <p v-if="books.length === 0">You Dont Have Any {{ heading }}</p>
     </div>
   </div>
@@ -16,12 +20,20 @@ import axios from "axios";
 import SearchBar from "@/components/SearchBar.vue";
 
 export default {
-  name: "Books",
-  props: ["heading"],
+  name: "ViewAll",
+  props: {
+    content: {
+      type: Array,
+      required: true,
+    },
+    source: {
+      type: String,
+      required: true,
+    },
+  },
   components: { Card, SearchBar },
   data() {
     return {
-      books: [],
       sections: [],
     };
   },
@@ -49,7 +61,7 @@ export default {
             Authorization: `Bearer ${accessToken}`,
           },
         });
-        this.books = booksResponse.data; // Assign directly to this.books
+        this.books = booksResponse.data;
         console.log(this.books);
       } catch (error) {
         console.error("Error fetching books:", error);
@@ -71,7 +83,7 @@ export default {
       }
     },
     receiveFilteredData(filteredData) {
-      this.books = filteredData;
+      this.content = filteredData;
       console.log("Received Data");
       console.log(this.books);
     },
@@ -88,7 +100,6 @@ export default {
 }
 .main-div {
   display: flex;
-  /* align-items: start; */
   flex-direction: column;
   padding: 2rem;
   background-color: white;

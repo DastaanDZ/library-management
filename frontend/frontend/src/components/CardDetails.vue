@@ -6,7 +6,7 @@
       <div class="row g-0">
         <div class="col-md-4">
           <img
-            src="./book.jpg"
+            :src="book.link"
             class="img-fluid rounded-start"
             alt="Book Cover"
           />
@@ -80,11 +80,10 @@ export default {
     return {
       book: null,
       bookExists: false,
-      bookIssued: false, // Add a new data property to track book existence
+      bookIssued: false,
     };
   },
   async mounted() {
-    // Fetch book details based on the ID prop
     const accessToken = localStorage.getItem("accessToken");
     this.userRole = localStorage.getItem("role");
 
@@ -94,7 +93,7 @@ export default {
     }
 
     const decodedToken = jwtDecode(accessToken);
-    this.user_id = decodedToken.sub; // Set user_id
+    this.user_id = decodedToken.sub;
 
     const response = await axios.get(
       `http://127.0.0.1:5000/requested-books/${this.user_id}`,
@@ -107,7 +106,6 @@ export default {
 
     const requestedBooks = response.data;
 
-    // Check if the current book ID exists in the list of requested books
     this.bookExists = requestedBooks.some(
       (book) => book.book_id === parseInt(this.book_id)
     );
@@ -121,7 +119,7 @@ export default {
   },
   methods: {
     async fetchBookDetails() {
-      const accessToken = localStorage.getItem("accessToken"); // Define accessToken here
+      const accessToken = localStorage.getItem("accessToken");
 
       try {
         const response = await axios.get(
@@ -138,15 +136,13 @@ export default {
         console.log(this.book);
       } catch (error) {
         console.error("Error fetching book details:", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }
     },
     async checkIssuedStatus() {
       try {
-        // Fetch issued books for the user
         const issuedBooksResponse = await axios.get(
           `http://127.0.0.1:5000/issued-books/${this.user_id}`
         );
@@ -158,8 +154,7 @@ export default {
         console.log("ISSUED STATUS", this.bookIssued);
       } catch (error) {
         console.error("Error fetching issued books:", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }
@@ -167,8 +162,6 @@ export default {
     async requestBook() {
       try {
         const accessToken = localStorage.getItem("accessToken");
-
-        // Send a POST request to the server to request the book
         await axios.post(
           `http://127.0.0.1:5000/request-book/${this.book_id}`,
           {},
@@ -178,31 +171,25 @@ export default {
             },
           }
         );
-
-        // Update the UI to reflect that the book has been requested
-        this.bookExists = true; // Set bookExists to true after requesting the book
+        this.bookExists = true;
         alert("Book requested successfully");
         console.log("Book requested successfully");
       } catch (error) {
         console.error("Error requesting book:", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }
     },
     checkBookAvailability() {
-      return this.bookExists; // Return the book existence status
+      return this.bookExists;
     },
     redirectToFeedbackPage() {
-      // Redirect to the feedback page with the book ID
       this.$router.push(`/feedback/${this.book_id}`);
     },
     async returnBook() {
       try {
         const accessToken = localStorage.getItem("accessToken");
-
-        // Send a POST request to the server to return the book
         await axios.post(
           `http://127.0.0.1:5000/return-book/${this.book_id}`,
           {},
@@ -213,15 +200,13 @@ export default {
           }
         );
 
-        // Update the UI to reflect that the book has been returned
-        this.bookExists = false; // Set bookExists to false after returning the book
+        this.bookExists = false;
         alert("Book returned successfully");
         console.log("Book returned successfully");
         this.$router.push(`/user`);
       } catch (error) {
         console.error("Error returning book:", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }

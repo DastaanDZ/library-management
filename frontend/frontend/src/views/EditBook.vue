@@ -126,7 +126,6 @@ export default {
         );
         console.log(response.data);
         alert("Book updates successfully");
-        // Optionally, you can add a success message or redirect to another page
       } catch (error) {
         console.error("Error editing book:", error);
       }

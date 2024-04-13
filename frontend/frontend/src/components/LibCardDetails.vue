@@ -6,7 +6,7 @@
       <div class="row g-0">
         <div class="col-md-4">
           <img
-            src="./book.jpg"
+            :src="book.link"
             class="img-fluid rounded-start"
             alt="Book Cover"
           />
@@ -28,15 +28,6 @@
             </p>
 
             <h3>Books Have to be Assigned</h3>
-            <button
-              v-for="user in requestedUsers"
-              :key="user.userId"
-              @click="issueBook(user.userId, book_id)"
-              class="btn btn-primary m-2"
-            >
-              {{ user.username }}
-            </button>
-
             <button
               v-for="user in requestedUsers"
               :key="user.userId"
@@ -70,15 +61,13 @@ export default {
   data() {
     return {
       book: null,
-      requestedUsers: [], // Changed variable name and removed requestedUsersId
+      requestedUsers: [],
     };
   },
   created() {
-    // Fetch the access token when the component is created
     this.accessToken = localStorage.getItem("accessToken");
   },
   mounted() {
-    // Fetch book details and requested users after the component is mounted
     this.fetchBookDetails();
     this.fetchRequestedUsers();
   },
@@ -89,15 +78,14 @@ export default {
           `http://127.0.0.1:5000/books/${this.book_id}`,
           {
             headers: {
-              Authorization: `Bearer ${this.accessToken}`, // Use this.accessToken here
+              Authorization: `Bearer ${this.accessToken}`,
             },
           }
         );
         this.book = response.data;
       } catch (error) {
         console.error("Error fetching book details", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }
@@ -109,17 +97,13 @@ export default {
           `http://127.0.0.1:5000/users-requested/${this.book_id}`,
           {
             headers: {
-              Authorization: `Bearer ${this.accessToken}`, // Use this.accessToken here
+              Authorization: `Bearer ${this.accessToken}`,
             },
           }
         );
 
         this.requestedUsers = response.data.requested_users;
         console.log("USERS requested this book", this.requestedUsers);
-        // this.requestedUsers.map((userId, index) => {
-        //   console.log("USERID", userId);
-        // });
-        // Fetch username for each requested user
         await Promise.all(
           this.requestedUsers.map(async (userId, index) => {
             try {
@@ -139,8 +123,7 @@ export default {
               console.log("Username and ID", this.requestedUsers);
             } catch (error) {
               console.error("Error fetching user info:", error);
-              if (error.response && error.response.status === 404) {
-                // Redirect to login page if unauthorized (status code 404)
+              if (error.response && error.response.status === 401) {
                 this.$router.push("/login");
               }
             }
@@ -148,15 +131,13 @@ export default {
         );
       } catch (error) {
         console.error("Error fetching requested users: ", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }
     },
     async issueBook(userId, bookId) {
       try {
-        // Step 1: Issue the book to the user
         const issueResponse = await axios.post(
           `http://127.0.0.1:5000/issue-book/${userId}`,
           { book_id: [bookId] },
@@ -167,7 +148,8 @@ export default {
           }
         );
 
-        // Step 2: Get the request ID using book_id and user_id
+        console.log("BOOK ISSUED", issueResponse);
+
         const requestIdResponse = await axios.get(
           `http://127.0.0.1:5000/request-id?book_id=${bookId}&user_id=${userId}`,
           {
@@ -178,7 +160,6 @@ export default {
         );
         const requestId = requestIdResponse.data.request_id;
 
-        // Step 3: Send a request to remove the request
         const removeRequestResponse = await axios.delete(
           `http://127.0.0.1:5000/remove-request/${requestId}`,
           {
@@ -187,13 +168,13 @@ export default {
             },
           }
         );
+
+        console.log("REQUEST REMOVED", removeRequestResponse);
         this.fetchRequestedUsers();
-        // Display success message
         alert("Assigned book to the user and removed request successfully");
       } catch (error) {
         console.error("Error issuing book: ", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }

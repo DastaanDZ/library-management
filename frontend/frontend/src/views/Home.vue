@@ -1,4 +1,3 @@
-<!-- WelcomePage.vue -->
 <template>
   <div class="welcome-page">
     <h1>Welcome to Library Management Application</h1>
@@ -9,7 +8,6 @@
 export default {
   name: "Home",
   mounted() {
-    // After 2 seconds, redirect to /login
     setTimeout(() => {
       this.$router.push("/login");
     }, 2000);

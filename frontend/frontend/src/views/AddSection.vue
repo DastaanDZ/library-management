@@ -47,7 +47,6 @@ export default {
   methods: {
     async addSection() {
       try {
-        // Send an HTTP POST request to the backend endpoint
         const accessToken = localStorage.getItem("accessToken");
 
         const response = await axios.post(
@@ -60,13 +59,11 @@ export default {
           }
         );
 
-        // Handle the response
         console.log(response.data.message);
         console.log("New section ID:", response.data.section_id);
 
         alert("Section Added");
 
-        // Clear the form fields after successful submission
         this.sectionData.name = "";
         this.sectionData.description = "";
       } catch (error) {

@@ -1,6 +1,6 @@
 <template>
   <div class="card d-flex flex-wrap">
-    <img src="./book.jpg" class="card-img-top" alt="Book Cover" />
+    <img :src="book.link" class="card-img-top" alt="Book Cover" />
     <div class="card-body">
       <h5 class="card-title">{{ book.name }}</h5>
       <h6 class="card-subtitle">{{ book.author }}</h6>
@@ -27,7 +27,7 @@ export default {
   },
   data() {
     return {
-      userRole: localStorage.getItem("role"), // Get the user's role from localStorage
+      userRole: localStorage.getItem("role"),
     };
   },
 };

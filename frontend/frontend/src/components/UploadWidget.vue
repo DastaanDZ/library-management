@@ -10,8 +10,8 @@
 export default {
   name: "UploadWidget",
   mounted() {
-    const cloudName = "hzxyensd5"; // replace with your own cloud name
-    const uploadPreset = "aoh4fpwm"; // replace with your own upload preset
+    const cloudName = "hzxyensd5";
+    const uploadPreset = "aoh4fpwm";
 
     const myWidget = cloudinary.createUploadWidget(
       {
@@ -29,7 +29,6 @@ export default {
       }
     );
 
-    // Assign myWidget to a data property for access inside methods
     this.myWidget = myWidget;
   },
   data() {
@@ -42,7 +41,6 @@ export default {
   },
   methods: {
     open() {
-      // Call open on myWidget
       this.myWidget.open();
     },
     setUrl(url) {

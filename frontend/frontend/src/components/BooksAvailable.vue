@@ -11,7 +11,9 @@
     </div>
     <h6>
       <h6>
-        <router-link to="/books">
+        <router-link
+          :to="{ name: 'ViewAll', params: { content: books, source: heading } }"
+        >
           <button class="btn btn-primary" type="submit">View All</button>
         </router-link>
       </h6>

@@ -9,7 +9,6 @@ import MonitorTable from "@/components/MonitorTable.vue";
 import CardDetails from "@/components/CardDetails.vue";
 import UserDetail from "@/components/UserDetail.vue";
 
-import Books from "@/views/Books.vue";
 import Issued from "@/views/Issued.vue";
 import Requested from "@/views/requested.vue";
 import LandingPage from "@/views/LandingPage.vue";
@@ -21,6 +20,7 @@ import AssignSection from "@/views/AssignSection.vue";
 import AddSection from "@/views/AddSection.vue";
 import EditBook from "@/views/EditBook.vue";
 import Home from "@/views/Home.vue";
+import ViewAll from "@/views/ViewAll.vue";
 
 Vue.use(VueRouter);
 
@@ -95,10 +95,10 @@ const routes = [
     component: MonitorTable,
   },
   {
-    path: "/books",
-    name: "Books",
-    component: Books,
-    props: { heading: "BOOKS" },
+    path: "/view-all",
+    name: "ViewAll",
+    component: ViewAll,
+    props: true,
   },
   {
     path: "/requested",
@@ -136,6 +136,7 @@ const routes = [
 ];
 
 const router = new VueRouter({
+  mode: "history",
   routes,
 });
 

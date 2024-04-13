@@ -7,7 +7,6 @@
           <th scope="col">Book Name</th>
           <th scope="col">Availability</th>
           <th scope="col">Users Issued To</th>
-          <!-- New column for actions -->
         </tr>
       </thead>
       <tbody>
@@ -29,7 +28,6 @@
                   v-if="i !== book.users_issued_to.length - 1"
                   class="line-break"
                 ></div>
-                <!-- Add line break if not the last user -->
                 <button
                   @click="revokeAccess(book.id, user.id)"
                   class="btn btn-danger"
@@ -41,9 +39,7 @@
 
             <template v-else> No users issued </template>
           </td>
-          <td>
-            <!-- Placeholder for actions when no users issued -->
-          </td>
+          <td></td>
         </tr>
       </tbody>
     </table>
@@ -75,8 +71,7 @@ export default {
         console.log(this.monitoredBooks);
       } catch (error) {
         console.error("Error fetching monitored books:", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }
@@ -99,15 +94,12 @@ export default {
         alert("Access revoked for user");
         this.fetchMonitoredBooks();
 
-        console.log(response.data.message); // Log the response message
-        // Optionally, you can update the UI or perform any other actions after revoking access
+        console.log(response.data.message);
       } catch (error) {
         console.error("Error revoking access:", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
-        // Handle errors here
       }
     },
   },
@@ -139,6 +131,6 @@ export default {
   color: #dc3545;
 }
 .line-break {
-  margin-bottom: 5px; /* Adjust the spacing as needed */
+  margin-bottom: 5px;
 }
 </style>

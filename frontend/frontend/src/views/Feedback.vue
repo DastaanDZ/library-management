@@ -50,7 +50,6 @@ export default {
 
         alert("Feedback submitted successfully");
         console.log("Feedback submitted successfully");
-        // Redirect the user to another page after feedback submission if needed
         this.$router.push(`/user`);
       } catch (error) {
         console.error("Error submitting feedback:", error);

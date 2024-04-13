@@ -83,46 +83,36 @@ export default {
         this.userData = response.data;
       } catch (error) {
         console.error("Error fetching user info:", error);
-        if (error.response && error.response.status === 404) {
-          // Redirect to login page if unauthorized (status code 404)
+        if (error.response && error.response.status === 401) {
           this.$router.push("/login");
         }
       }
     },
     async saveChanges() {
       try {
-        // Retrieve access token from localStorage
         const accessToken = localStorage.getItem("accessToken");
 
         if (!accessToken) {
           throw new Error("Access token not found");
         }
-
-        // Decode the access token to extract user ID
         const decodedToken = jwtDecode(accessToken);
         console.log(decodedToken);
         const userId = decodedToken.sub;
 
-        // Check if user ID is valid
         if (!userId) {
           throw new Error("Invalid user ID");
         }
 
-        // Make PUT request to update user data
         const response = await axios.put(
           `http://127.0.0.1:5000/edit-user/${this.$route.params.userId}`,
           this.userData
         );
         console.log(response.data);
-        // Optionally, you can show a success message or redirect the user after successful update
       } catch (error) {
         console.error("Error updating user:", error);
-        // Handle error - e.g., show an error message to the user
         if (error.response && error.response.status === 401) {
-          // Unauthorized access, redirect to login page
           this.$router.push("/login");
         } else {
-          // Other errors, redirect to user info page
           this.$router.push("/user-info");
         }
       }

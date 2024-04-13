@@ -40,16 +40,6 @@
         <div v-if="errors.email" class="text-danger">{{ errors.email }}</div>
       </div>
       <div class="form-group text-start mb-1">
-        <label for="role">Role:</label>
-        <input
-          v-model="userData.role"
-          type="text"
-          class="form-control item"
-          id="role"
-          placeholder="Role"
-        />
-      </div>
-      <div class="form-group text-start mb-1">
         <button type="submit" class="btn btn-block create-account">
           Register
         </button>
@@ -71,15 +61,12 @@ export default {
         password: "",
         role: "",
       },
-      errors: {}, // Object to store form validation errors
+      errors: {},
     };
   },
   methods: {
     registerUser() {
-      // Clear previous errors
       this.errors = {};
-
-      // Perform form validation
       if (!this.userData.username) {
         this.errors.username = "Username is required";
       }
@@ -92,26 +79,28 @@ export default {
         this.errors.password = "Password is required";
       }
 
-      // If there are validation errors, prevent form submission
       if (Object.keys(this.errors).length > 0) {
         return;
       }
 
-      // Make an HTTP POST request to the backend route
+      if (this.userData.email.includes("_librarian@gmail.com")) {
+        this.userData.role = "librarian";
+      } else {
+        this.userData.role = "user";
+      }
+
       axios
         .post("http://127.0.0.1:5000/register", this.userData)
         .then((response) => {
-          console.log(response.data.message); // Log the response message
+          console.log(response.data.message);
           this.$router.push("/login");
-          // Optionally, you can redirect the user or show a success message here
         })
         .catch((error) => {
-          console.error("Error:", error); // Log any errors
-          // Optionally, you can display an error message to the user
+          console.error("Error:", error);
         });
     },
+
     isValidEmail(email) {
-      // Regular expression to validate email format
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
     },
@@ -120,10 +109,6 @@ export default {
 </script>
 
 <style>
-body {
-  /* background-color: #dee9ff; */
-}
-
 .registration-form {
   padding: 50px 0;
 }
