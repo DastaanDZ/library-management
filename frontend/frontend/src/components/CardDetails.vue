@@ -20,7 +20,9 @@
               <p class="card-text">{{ book.content }}</p>
             </template>
             <template v-else>
-              <p class="card-text">Please issue this book first</p>
+              <p style="color: red" class="card-text">
+                Please issue this book first
+              </p>
             </template>
             <h4>Author</h4>
             <p class="card-text">{{ book.author }}</p>
