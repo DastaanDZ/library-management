@@ -13,19 +13,14 @@
         </div>
         <div class="col-md-8">
           <div class="card-body text-start">
-            <h5>Name</h5>
-            <h5 class="card-title">{{ book.name }}</h5>
-            <p>Content</p>
+            <h4>Name</h4>
+            <p class="card-title">{{ book.name }}</p>
+            <h4>Content</h4>
             <p class="card-text">{{ book.content }}</p>
-            <p>Author</p>
+            <h4>Author</h4>
             <p class="card-text">{{ book.author }}</p>
-            <p>Price</p>
+            <h4>Price</h4>
             <p class="card-text">{{ book.price }}</p>
-            <p class="card-text">
-              <small class="text-muted"
-                >Last updated: {{ book.lastUpdated }}</small
-              >
-            </p>
 
             <h3>Books Have to be Assigned</h3>
             <button

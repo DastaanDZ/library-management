@@ -24,6 +24,6 @@ export default {
 }
 
 .welcome-page h1 {
-  font-size: 24px;
+  font-size: 2.5rem;
 }
 </style>

@@ -64,6 +64,7 @@
 
 <script>
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 export default {
   name: "UserInfo",
@@ -82,8 +83,18 @@ export default {
   methods: {
     async fetchUserInfo() {
       try {
+        const accessToken = localStorage.getItem("accessToken");
+
+        if (!accessToken) {
+          console.error("Access token not found in localStorage");
+          return;
+        }
+
+        const decodedToken = jwtDecode(accessToken);
+        const user_id = decodedToken.sub;
+
         const response = await axios.get(
-          `http://127.0.0.1:5000/user-info/${this.$route.params.userId}`
+          `http://127.0.0.1:5000/user-info/${user_id}`
         );
         this.userData = response.data;
       } catch (error) {
@@ -95,8 +106,17 @@ export default {
     },
     async fetchBooksIssued() {
       try {
+        const accessToken = localStorage.getItem("accessToken");
+
+        if (!accessToken) {
+          console.error("Access token not found in localStorage");
+          return;
+        }
+
+        const decodedToken = jwtDecode(accessToken);
+        const user_id = decodedToken.sub;
         const response = await axios.get(
-          `http://127.0.0.1:5000/books-issued/${this.$route.params.userId}`
+          `http://127.0.0.1:5000/books-issued/${user_id}`
         );
         this.booksIssued = response.data.count;
       } catch (error) {
@@ -108,8 +128,17 @@ export default {
     },
     async fetchBooksRequested() {
       try {
+        const accessToken = localStorage.getItem("accessToken");
+
+        if (!accessToken) {
+          console.error("Access token not found in localStorage");
+          return;
+        }
+
+        const decodedToken = jwtDecode(accessToken);
+        const user_id = decodedToken.sub;
         const response = await axios.get(
-          `http://127.0.0.1:5000/books-requested/${this.$route.params.userId}`
+          `http://127.0.0.1:5000/books-requested/${user_id}`
         );
         this.booksRequested = response.data.count;
       } catch (error) {

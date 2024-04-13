@@ -8,7 +8,9 @@
     <router-link
       :to="{
         name: userRole === 'librarian' ? 'LibCardDetails' : 'CardDetails',
-        params: { book_id: book.book_id ? book.book_id : book.id },
+        params: {
+          book_id: book.book_id ? book.book_id : book.id,
+        },
       }"
     >
       <button class="btn btn-primary mt-3" type="submit">View Details</button>

@@ -70,8 +70,10 @@ export default {
             localStorage.setItem("role", response.data.role);
             console.log("token set in local storage");
             if (response.data.role == "user") {
+              console.log("Redirecting to user");
               this.$router.push("/user");
             } else if (response.data.role == "librarian") {
+              console.log("Redirecting to librarian");
               this.$router.push("/librarian");
             } else {
               this.$router.push("/");

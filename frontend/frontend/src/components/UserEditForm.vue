@@ -33,16 +33,6 @@
         />
       </div>
       <div class="form-group text-start mb-1">
-        <label for="role">Role:</label>
-        <input
-          v-model="userData.role"
-          type="text"
-          class="form-control item"
-          id="role"
-          placeholder="Role"
-        />
-      </div>
-      <div class="form-group text-start mb-1">
         <button type="submit" class="btn btn-block save-changes">
           Save Changes
         </button>
@@ -53,6 +43,7 @@
 
 <script>
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 export default {
   name: "EditProfileForm",
@@ -72,8 +63,17 @@ export default {
   methods: {
     async fetchUserInfo() {
       try {
+        const accessToken = localStorage.getItem("accessToken");
+
+        if (!accessToken) {
+          console.error("Access token not found in localStorage");
+          return;
+        }
+
+        const decodedToken = jwtDecode(accessToken);
+        const user_id = decodedToken.sub;
         const response = await axios.get(
-          `http://127.0.0.1:5000/user-info/${this.$route.params.userId}`,
+          `http://127.0.0.1:5000/user-info/${user_id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -104,7 +104,7 @@ export default {
         }
 
         const response = await axios.put(
-          `http://127.0.0.1:5000/edit-user/${this.$route.params.userId}`,
+          `http://127.0.0.1:5000/edit-user/${userId}`,
           this.userData
         );
         console.log(response.data);

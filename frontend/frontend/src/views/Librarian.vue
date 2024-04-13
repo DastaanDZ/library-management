@@ -24,9 +24,6 @@ export default {
   props: ["roleRequired"],
   components: {
     UserDetail,
-    BookIssued,
-    BookRequested,
-    BookReturned,
     BooksAvailable,
     NewArrival,
     LibrarianAction,
@@ -73,6 +70,10 @@ export default {
             },
           }
         );
+        // console.log("USERINFO RESPONSE", userInfoResponse);
+        if (userInfoResponse.data.role != "librarian") {
+          this.$router.push("/user");
+        }
         this.username = userInfoResponse.data.username;
       } catch (error) {
         if (error.response && error.response.status === 401) {
