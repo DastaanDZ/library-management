@@ -20,5 +20,6 @@ This project is a comprehensive library management system designed to streamline
 
 ## Usage
 - Once both the frontend and backend servers are running, you can access the library management system through your web browser.
-- Use the provided functionalities to monitor books, issue books to users, edit book details, and more.
-- For administrative tasks, make sure to log in with appropriate credentials.
+- You can login as a user with any details asked to fill
+- For librarian access you have to enter an email Id which should be like something_librarian@gmail.com to let app identify you as an librarian
+- You can then explore the app.
