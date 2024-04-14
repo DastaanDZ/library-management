@@ -20,11 +20,15 @@ app.conf.timezone = 'Asia/Kolkata'
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(
-        crontab(hour=10, minute=22),  # Run in the evening every day
+        crontab(hour=17, minute=29),  # Run in the evening every day
         send_reminders.s()
     )
+    # sender.add_periodic_task(
+    #     crontab(day_of_month=1, hour=0, minute=0),  # Run on the first day of each month
+    #     generate_and_send_monthly_report.s()
+    # )
     sender.add_periodic_task(
-        crontab(day_of_month=1, hour=0, minute=0),  # Run on the first day of each month
+        crontab(hour=17, minute=31),  # Run on the first day of each month
         generate_and_send_monthly_report.s()
     )
 
@@ -34,8 +38,8 @@ def send_reminders():
     print("INACTIVE USER:")
     print(inactive_users)
     for user_id in inactive_users:
-        print("SENDING REMINDER FOR USER ID:", user_id)
-        send_reminder.delay(user_id)
+        print("SENDING REMINDER FOR USER ID:", user_id['id'])
+        send_reminder.delay(user_id['id'])
 
 def get_inactive_users():
     endpoint_url = 'http://127.0.0.1:5000/inactive-users'
@@ -53,8 +57,10 @@ def get_inactive_users():
 @app.task
 def send_reminder(user_id):
     url = f"http://127.0.0.1:5000/user-info/{user_id}"
+    print("USER_ID", user_id)
     try:
         response = requests.get(url)
+        print("RESPONSE",response)
         if response.status_code == 200:
             user = response.json()
             send_email.delay(

@@ -99,6 +99,9 @@ export default {
         );
         console.log(response.data);
       } catch (error) {
+        if (error.response && error.response.status === 400) {
+          alert("All data required");
+        }
         console.error("Error adding book:", error);
       }
     },

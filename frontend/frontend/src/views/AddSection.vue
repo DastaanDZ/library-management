@@ -67,6 +67,9 @@ export default {
         this.sectionData.name = "";
         this.sectionData.description = "";
       } catch (error) {
+        if (error.response && error.response.status === 400) {
+          alert("Missing data required");
+        }
         console.error("Error adding section:", error);
       }
     },

@@ -108,6 +108,11 @@ export default {
           this.userData
         );
         console.log(response.data);
+        if (localStorage.getItem("role") == "librarian") {
+          this.$router.push("/librarian");
+        } else {
+          this.$router.push("/user");
+        }
       } catch (error) {
         console.error("Error updating user:", error);
         if (error.response && error.response.status === 401) {

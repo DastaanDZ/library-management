@@ -96,6 +96,9 @@ export default {
           this.$router.push("/login");
         })
         .catch((error) => {
+          if (error.response && error.response.status === 400) {
+            alert("User with same username already exist");
+          }
           console.error("Error:", error);
         });
     },

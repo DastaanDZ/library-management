@@ -1,13 +1,9 @@
-# main.py
 import os
 from flask import Flask
 from app.config import LocalDevelopmentConfig
 from app.database import db, jwt
 from app.controllers import app as routes_app
 from flask_cors import CORS
-
-# from worker import celery_app
-# import tasks
 
 def create_app():
     app = Flask(__name__, template_folder="templates")
@@ -25,9 +21,6 @@ def create_app():
     jwt.init_app(app) 
 
     return app
-
-
-# cel_app = celery_app
 
 if __name__ == '__main__':
     app = create_app() 

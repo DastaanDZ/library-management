@@ -88,6 +88,7 @@ const routes = [
     path: "/edit-book/:book_id",
     name: "EditBook",
     component: EditBook,
+    props: true,
   },
   {
     path: "/monitor",

@@ -7,6 +7,8 @@
           <th scope="col">Book Name</th>
           <th scope="col">Availability</th>
           <th scope="col">Users Issued To</th>
+          <th scope="col">Feedback</th>
+          <!-- New column -->
         </tr>
       </thead>
       <tbody>
@@ -34,12 +36,16 @@
                 >
                   Revoke
                 </button>
+                <div>
+                  <h5>Feedback</h5>
+                  <p>{{ user.feedback }}</p>
+                </div>
+                <hr></hr>
               </div>
             </template>
 
             <template v-else> No users issued </template>
           </td>
-          <td></td>
         </tr>
       </tbody>
     </table>

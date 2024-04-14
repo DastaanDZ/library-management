@@ -1,4 +1,3 @@
-# models.py
 from app.database import db
 from datetime import datetime, timedelta
 
@@ -7,7 +6,7 @@ class User(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(100), nullable=False)
-    role = db.Column(db.String(20), nullable=False)  # 'user' or 'librarian'
+    role = db.Column(db.String(20), nullable=False) 
     last_login = db.Column(db.DateTime)
 
     def __repr__(self):
@@ -27,8 +26,7 @@ class Book(db.Model):
     available = db.Column(db.Boolean())
     price = db.Column(db.Integer(), nullable=False)
     link = db.Column(db.String(), nullable=False)
-    
-    # Define the foreign key to establish the relationship with the Section model
+  
     section_id = db.Column(db.Integer(), db.ForeignKey('section.id'))
 
     def serialize(self):
@@ -41,7 +39,7 @@ class Book(db.Model):
             'available': self.available,
             'price': self.price,
             'link': self.link,
-            # Add more attributes as needed
+  
         }
 
 
@@ -58,7 +56,6 @@ class Section(db.Model):
     date_created = db.Column(db.DateTime, default=datetime.now())
     description = db.Column(db.Text)
     
-    # Define the relationship with the Book model
     books = db.relationship('Book', backref='section', lazy=True)
 
     def serialize(self):
@@ -67,7 +64,7 @@ class Section(db.Model):
             'name': self.name,
             'date_created': self.date_created.strftime('%Y-%m-%d'),
             'description': self.description,
-            'books': [book.serialize() for book in self.books]  # Serialize associated books
+            'books': [book.serialize() for book in self.books] 
         }
     
 
@@ -100,5 +97,4 @@ class Request(db.Model):
             'id': self.id,
             'user_id': self.user_id,
             'book_id': self.book_id
-            # Add more attributes as needed
         }

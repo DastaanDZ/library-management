@@ -31,7 +31,7 @@
           </div>
           <div class="btn-group">
             <button
-              v-if="!bookExists"
+              v-if="!bookExists && !bookIssued"
               class="btn btn-primary mt-3"
               type="submit"
               @click="requestBook"
@@ -76,9 +76,6 @@ export default {
     book_id: {
       type: Number,
       required: true,
-    },
-    issued: {
-      type: Boolean,
     },
   },
   data() {
@@ -213,6 +210,8 @@ export default {
         console.error("Error returning book:", error);
         if (error.response && error.response.status === 401) {
           this.$router.push("/login");
+        } else if (error.response && error.response.status === 400) {
+          alert("You have not issued this book");
         }
       }
     },

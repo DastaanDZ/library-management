@@ -126,6 +126,7 @@ export default {
         );
         console.log(response.data);
         alert("Book updates successfully");
+        this.$router.push("/librarian");
       } catch (error) {
         console.error("Error editing book:", error);
       }

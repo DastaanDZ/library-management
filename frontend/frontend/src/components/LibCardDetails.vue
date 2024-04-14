@@ -22,6 +22,13 @@
             <h4>Price</h4>
             <p class="card-text">{{ book.price }}</p>
 
+            <router-link
+              :to="{ name: 'EditBook', params: { book_id: book.id } }"
+              class="btn btn-primary m-2"
+            >
+              Edit Book
+            </router-link>
+
             <h3>Books Have to be Assigned</h3>
             <button
               v-for="user in requestedUsers"
@@ -171,6 +178,8 @@ export default {
         console.error("Error issuing book: ", error);
         if (error.response && error.response.status === 401) {
           this.$router.push("/login");
+        } else if (error.response && error.response.status === 404) {
+          alert("Book is not available anymore");
         }
       }
     },

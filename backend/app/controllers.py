@@ -1,4 +1,4 @@
-# controllers.py
+
 from flask import Flask, render_template, request, redirect, url_for, abort, send_from_directory, Blueprint, jsonify
 import pdfkit
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -6,8 +6,6 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from app.models import User, Book, Request, Feedback, Section, IssuedBook
 from app.database import db
 from datetime import datetime, timedelta
-# from tasks import send_email
-# from mail import send_email
 
 app = Blueprint('controllers', __name__)
 
@@ -15,31 +13,22 @@ app = Blueprint('controllers', __name__)
 def greeting():
     return("Hello, world")
 
-# @app.route('/email', methods=['GET'])
-# def mail():
-#     send_email.delay("21f2001529@ds.study.iitm.ac.in","nigaver985@ikumaru.com","Test subject","This is a test message")
-#     # send_email("21f2001529@ds.study.iitm.ac.in","dagocoj482@eryod.com","Test subject","This is a test message")
-#     return("EMAIL sent")
-
 @app.route('/inactive-users', methods=['GET'])
 def get_inactive_users_endpoint():
-    # Define the timeframe for considering a user as inactive (e.g., 24 hours)
+
     inactive_threshold = datetime.now() - timedelta(seconds=5)
 
-    # Query the database to retrieve users who haven't visited the app within the specified timeframe
     inactive_users = User.query.filter(User.last_login < inactive_threshold).all()
 
-    # Serialize the inactive users into a JSON response
     serialized_users = [{'id': user.id, 'username': user.username, 'email': user.email} for user in inactive_users]
     
     return jsonify({'inactive_users': serialized_users}), 200
 
 @app.route('/check-inactive', methods=['GET'])
 def checkInactive():
-    # Define the timeframe for considering a user as inactive (e.g., 5 seconds)
+
     inactive_threshold = datetime.now() - timedelta(seconds=5)
 
-    # Query the database to retrieve users who haven't visited the app within the specified timeframe
     inactive_users = User.query.filter(User.last_login < inactive_threshold).all()
 
     print("INACTIVE USERS:")
@@ -53,13 +42,16 @@ def checkInactive():
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
+    existing_user = User.query.filter_by(username=data['username']).first()
+    existing_email = User.query.filter_by(email=data['email']).first()
+    if existing_user or existing_email:
+        return jsonify({'error': 'Username already exists!'}), 400
+
     hashed_password = generate_password_hash(data['password'])
     new_user = User(username=data['username'], email=data['email'], password=hashed_password, role=data['role'])
     new_user.save()
     return jsonify({'message': 'User created successfully!'}), 201
 
-# Endpoint to get user info
-# @jwt_required()
 @app.route('/user-info/<int:user_id>', methods=['GET'])
 def user_info(user_id):
 
@@ -89,18 +81,15 @@ def edit_user(user_id):
         if not user:
             return jsonify({'message': 'User not found'}), 404
 
-        # Update user attributes
         if 'username' in data:
             user.username = data['username']
         if 'email' in data:
             user.email = data['email']
         if 'password' in data:
-            # Hash the new password before updating
             hashed_password = generate_password_hash(data['password'])
             user.password = hashed_password
         if 'role' in data:
             user.role = data['role']
-        # Add more attributes as needed
 
         db.session.commit()
         return jsonify({'message': 'User updated successfully'}), 200
@@ -117,21 +106,19 @@ def login():
     if not user or not check_password_hash(user.password, data['password']):
         return jsonify({'message': 'Invalid username or password'}), 401
 
-    user.last_login = datetime.now()  # Update last login time
-    db.session.commit()  # Commit changes to the database
+    user.last_login = datetime.now() 
+    db.session.commit()  
 
     access_token = create_access_token(identity=user.id)
     print(access_token)
     return jsonify({'access_token': access_token, 'role': user.role}), 200
 
-# Logout route
 @app.route('/logout', methods=['POST'])
-@jwt_required()  # Requires a valid access token
+@jwt_required()  
 def logout():
-    # Get the current user's identity from the access token
+
     current_user_id = get_jwt_identity()
 
-    # Unset JWT cookies to remove access token
     resp = jsonify({'message': 'Logout successful'})
     unset_jwt_cookies(resp)
     
@@ -152,11 +139,9 @@ def request_book(book_id):
     
     book = Book.query.get(book_id)
     
-    # Check if the book is already requested by the user
     if Request.query.filter_by(user_id=user_id, book_id=book_id).first():
         return jsonify({'message': 'You have already requested this book'}), 400
-            
-    # Create a request for the book
+
     request = Request(user_id=user_id, book_id=book_id)
     db.session.add(request)
     db.session.commit()
@@ -167,18 +152,14 @@ def request_book(book_id):
 @jwt_required()
 def get_requested_books(user_id):
 
-    # Query the database to retrieve the list of requested books for the user
     requested_books = Request.query.filter_by(user_id=user_id).all()
 
-    # Initialize an empty list to store serialized requested book data
     requested_books_data = []
 
-    # Loop through each requested book and serialize its data
     for request in requested_books:
-        # Query the Book model to get the details of the requested book
+
         book = Book.query.get(request.book_id)
         if book:
-            # Serialize the requested book data along with additional book details
             requested_book_data = {
                 'id': request.id,
                 'user_id': request.user_id,
@@ -186,27 +167,26 @@ def get_requested_books(user_id):
                 'name': book.name,
                 'author': book.author,
                 'link': book.link,
-                # Add more book details as needed
+
             }
-            # Append theaw serialized requested book data to the list
+
             requested_books_data.append(requested_book_data)
     print(requested_books_data)
-    # Return the serialized requested books data as a JSON response
+
     return jsonify(requested_books_data), 200
 
 @app.route('/issued-books/<int:user_id>', methods=['GET'])
 def get_issued_books(user_id):
     issued_books = IssuedBook.query.filter_by(user_id=user_id).all()
 
-    # Initialize an empty list to store serialized issued book data
+
     issued_books_data = []
 
-    # Loop through each issued book and serialize its data
     for issued_book in issued_books:
-        # Query the Book model to get the details of the issued book
+
         book = Book.query.get(issued_book.book_id)
         if book:
-            # Serialize the issued book data along with additional book details
+
             issued_book_data = {
                 'id': issued_book.id,
                 'user_id': issued_book.user_id,
@@ -216,12 +196,11 @@ def get_issued_books(user_id):
                 'issue_date': issued_book.issue_date.strftime('%Y-%m-%d %H:%M:%S'),
                 'return_date': issued_book.return_date.strftime('%Y-%m-%d %H:%M:%S') if issued_book.return_date else None,
                 'link': book.link,
-                # Add more book details as needed
+
             }
-            # Append the serialized issued book data to the list
+        
             issued_books_data.append(issued_book_data)
 
-    # Return the serialized issued books data as a JSON response
     return jsonify(issued_books_data), 200
 
 # Return a book
@@ -233,13 +212,11 @@ def return_book(book_id):
     if user_id is None or book_id is None:
         return jsonify({'message': 'User ID and Book ID are required'}), 400
 
-    # Find the corresponding entry in the IssuedBook table
     issued_book = IssuedBook.query.filter_by(user_id=user_id, book_id=book_id).first()
     
     if not issued_book:
         return jsonify({'message': 'You have not issued this book'}), 400
 
-    # Delete the entry from the IssuedBook table
     db.session.delete(issued_book)
     db.session.commit()
     
@@ -282,7 +259,6 @@ def add_book():
         return jsonify({'message': 'Missing required data'}), 400
 
     new_book = Book(name=name, content=content, author=author, count=count, available= available, price=price, link=link)
-    # Add more attributes as needed
 
     db.session.add(new_book)
     db.session.commit()
@@ -307,7 +283,7 @@ def issue_book(user_id):
     for book_id in book_ids:
         book = Book.query.get(book_id)
         if book and book.available:
-            issued_book = IssuedBook(user_id=user_id, book_id=book_id, librarian_id=1)
+            issued_book = IssuedBook(user_id=user_id, book_id=book_id, librarian_id=librarian_id)
             print("ISSUED BOOKS", issued_book)
             book.count -= 1
             if book.count == 0:
@@ -323,19 +299,16 @@ def issue_book(user_id):
 # Revoke access for e-book(s) from a user
 @app.route('/revoke-access', methods=['POST'])
 def revoke_access():
-    # Get data from the request
+
     data = request.get_json()
     book_id = data.get('book_id')
     user_id = data.get('user_id')
 
-    # Check if both book_id and user_id are provided
     if not book_id or not user_id:
         return jsonify({'message': 'Both book_id and user_id are required.'}), 400
 
-    # Query the issued book with the provided book_id and user_id
     issued_book = IssuedBook.query.filter_by(book_id=book_id, user_id=user_id).first()
 
-    # If the issued book exists, delete it from the database
     if issued_book:
         db.session.delete(issued_book)
         db.session.commit()
@@ -357,7 +330,6 @@ def edit_book(book_id):
     if not book:
         return jsonify({'message': 'Book not found'}), 404
 
-    # Update book attributes
     if 'name' in data:
         book.name = data['name']
     if 'content' in data:
@@ -370,8 +342,7 @@ def edit_book(book_id):
         book.available = data['available']
     if 'price' in data:
         book.price = data['price']
-    # Add more attributes as needed
-
+    
     db.session.commit()
     return jsonify({'message': 'Book updated successfully'}), 200
 
@@ -416,43 +387,41 @@ def assign_book(book_id, section_id):
 @app.route('/monitor', methods=['GET'])
 @jwt_required()
 def monitor_books():
-    # Get all books from the database
+
     books = Book.query.all()
 
-    # Create a list to store book information
     monitored_books = []
 
-    # Iterate through each book to get its current status
     for book in books:
-        # Check if the book is currently issued
+
         issued_books = IssuedBook.query.filter_by(book_id=book.id).all()
 
-        # Determine the availability status based on whether the book is currently issued
-        available = len(issued_books) == 0  # True if no issued books, False otherwise
+        available = len(issued_books) == 0 
 
-        # Create a list to store user IDs and names of users to whom the book is issued
         users_issued_to = []
 
-        # Iterate through issued books to collect user IDs and names
         for issued_book in issued_books:
             user = User.query.get(issued_book.user_id)
-            users_issued_to.append({'id': user.id, 'name': user.username})
+            user_feedback = Feedback.query.filter_by(user_id=user.id,book_id=book.id).first()
+            users_issued_to.append({
+                'id': user.id,
+                'name': user.username,
+                'feedback': user_feedback.feedback_text if user_feedback else None
+            })
 
-        # Create a dictionary to store book information
         book_info = {
             'id': book.id,
             'name': book.name,
             'author': book.author,
             'available': available,
             'users_issued_to': users_issued_to
-            # Add more information as needed
+
         }
 
-        # Append book information to the list
         monitored_books.append(book_info)
 
-    # Return the monitored books information as JSON response
     return jsonify(monitored_books)
+
 
 
 
@@ -473,8 +442,6 @@ def view_available_books():
 @jwt_required()
 def list_books():
     books = Book.query.all()
-    # Serialize each book object
-    # print(books)
     serialized_books = [book.serialize() for book in books]
     print(serialized_books)
     return jsonify(serialized_books)
@@ -517,36 +484,33 @@ def generate_pdf(book):
 @app.route('/books/<int:book_id>', methods=['GET'])
 @jwt_required()
 def get_book_details(book_id):
-    # Query the database to retrieve the book details based on the provided ID
+
     book = Book.query.get(book_id)
     print(book)
     if not book:
-        # If book with the provided ID is not found, return a 404 Not Found response
+
         return jsonify({'message': 'Book not found'}), 404
 
-    # Serialize the book object into JSON format
     book_details = book.serialize()
-
-    # Return the book details in JSON format
     return jsonify(book_details), 200
 
 
 @app.route('/sections', methods=['GET'])
 def search_section():
-    query = request.args.get('query')  # Get the search query from the request parameters
-    sections = Section.query.filter(Section.name.ilike(f'%{query}%')).all()  # Search for sections containing the query
-    serialized_sections = [section.serialize() for section in sections]  # Serialize sections
+    query = request.args.get('query')  
+    sections = Section.query.filter(Section.name.ilike(f'%{query}%')).all()  
+    serialized_sections = [section.serialize() for section in sections]  
     return jsonify(serialized_sections), 200
 
 @app.route('/books', methods=['GET'])
 def search_books():
-    query = request.args.get('query')  # Get the search query from the request parameters
+    query = request.args.get('query') 
     books = Book.query.filter(
         (Book.name.ilike(f'%{query}%')) |
         (Book.author.ilike(f'%{query}%')) |
         (Book.content.ilike(f'%{query}%'))
-    ).all()  # Search for books containing the query in name, author, or content
-    serialized_books = [book.serialize() for book in books]  # Serialize books
+    ).all() 
+    serialized_books = [book.serialize() for book in books] 
     return jsonify(serialized_books), 200
 
 
@@ -560,10 +524,9 @@ def get_users_requested(book_id):
 
 @app.route('/unique-books-requested', methods=['GET'])
 def unique_books_requested():
-    # Query the Request table to get distinct book IDs
+ 
     distinct_book_ids = db.session.query(Request.book_id).distinct().all()
 
-    # Fetch book details for each distinct book ID
     unique_books = []
     for book_id in distinct_book_ids:
         book = Book.query.get(book_id)
@@ -575,7 +538,7 @@ def unique_books_requested():
                 'link': book.link,
                 'content': book.content,
                 'price': book.price,
-                # Add more book details as needed
+    
             })
 
     return jsonify({'unique_books': unique_books}), 200
@@ -583,12 +546,11 @@ def unique_books_requested():
 
 @app.route('/remove-request/<int:request_id>', methods=['DELETE'])
 def remove_request(request_id):
-    # Check if the request exists
     request_entry = Request.query.get(request_id)
     if not request_entry:
         return jsonify({'message': 'Request not found'}), 404
 
-    # Delete the request entry
+
     db.session.delete(request_entry)
     db.session.commit()
 
@@ -596,46 +558,34 @@ def remove_request(request_id):
 
 @app.route('/request-id', methods=['GET'])
 def get_request_id():
-    # Get book_id and user_id from the request parameters
+
     book_id = request.args.get('book_id')
     user_id = request.args.get('user_id')
 
-    # Validate input parameters
     if not book_id or not user_id:
         return jsonify({'message': 'Missing book_id or user_id parameter'}), 400
 
-    # Query the Request table to find the request ID
     request_entry = Request.query.filter_by(book_id=book_id, user_id=user_id).first()
 
-    # Check if the request exists
     if not request_entry:
         return jsonify({'message': 'Request not found'}), 404
 
-    # Return the request ID
     return jsonify({'request_id': request_entry.id}), 200
 
 @app.route('/add-section', methods=['POST'])
 @jwt_required()
 def add_section():
-    # Get data from the request
+
     data = request.get_json()
     name = data.get('name')
     description = data.get('description')
 
-    # Validate required data
     if not name:
         return jsonify({'message': 'Name is required for the section'}), 400
 
-    # Create a new section object
     new_section = Section(name=name, description=description, date_created=datetime.utcnow())
-
-    # Add the section to the database session
     db.session.add(new_section)
-
-    # Commit the changes to the database
     db.session.commit()
-
-    # Return a success message
     return jsonify({'message': 'Section added successfully', 'section_id': new_section.id}), 201
     
 # Endpoint to fetch the number of books issued to a user
@@ -676,7 +626,7 @@ def fetch_reports(user_id):
 # Endpoint to fetch all users
 @app.route('/all-users', methods=['GET'])
 def get_all_users():
-    users = User.query.all()  # Assuming User is your SQLAlchemy model for users
+    users = User.query.all()  
     user_list = []
     for user in users:
         user_info = {
@@ -684,7 +634,6 @@ def get_all_users():
             'username': user.username,
             'email': user.email,
             'role': user.role
-            # Add more fields as needed
         }
         user_list.append(user_info)
     return jsonify(users=user_list), 200
