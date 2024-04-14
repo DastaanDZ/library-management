@@ -8,7 +8,6 @@
           <th scope="col">Availability</th>
           <th scope="col">Users Issued To</th>
           <th scope="col">Feedback</th>
-          <!-- New column -->
         </tr>
       </thead>
       <tbody>
